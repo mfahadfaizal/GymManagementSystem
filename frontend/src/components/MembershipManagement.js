@@ -308,6 +308,16 @@ const MembershipManagement = () => {
   }
 
   return (
+    <div style={{
+      minHeight: '100vh',
+      backgroundImage: `url('/assets/images/4.jpg')`,  // Ensure gym.jpg is in public/assets/images/
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
+      backgroundRepeat: 'no-repeat',
+      display: 'flex',
+      alignItems: 'center',
+      padding: '2rem',
+    }}>
     <Container className="mt-4">
       <Card>
         <Card.Header>
@@ -714,6 +724,7 @@ const MembershipManagement = () => {
         </Form>
       </Modal>
     </Container>
+  </div>
   );
 };
 

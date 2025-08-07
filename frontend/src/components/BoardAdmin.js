@@ -3,9 +3,19 @@ import { Card, Container, Row, Col, Button, ListGroup, Badge, Table } from 'reac
 import { Link } from 'react-router-dom';
 
 const BoardAdmin = () => {
-  return (
-    <Container className="mt-4">
-      <h2>Admin Dashboard</h2>
+  return (<div
+    style={{
+      minHeight: '100vh',
+      backgroundImage: `url('/assets/images/4.jpg')`,  // Ensure gym.jpg is in public/assets/images/
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
+      backgroundRepeat: 'no-repeat',
+      display: 'flex',
+      alignItems: 'center',
+      padding: '2rem',
+    }}>
+    <Container className="mt-4" >
+      <h2 >Admin Dashboard</h2>
       <p className="text-muted">Full system administration and management.</p>
       
       <Row>
@@ -288,6 +298,7 @@ const BoardAdmin = () => {
         </Col>
       </Row>
     </Container>
+    </div>
   );
 };
 

@@ -10,7 +10,7 @@ const Navigation = () => {
 
   const handleLogout = () => {
     logout();
-    navigate('/login');
+    navigate('/');
   };
 
   const getRoleBadgeClass = (role) => {
