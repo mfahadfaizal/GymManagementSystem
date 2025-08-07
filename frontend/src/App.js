@@ -12,6 +12,7 @@ import BoardMember from './components/BoardMember';
 import BoardTrainer from './components/BoardTrainer';
 import BoardStaff from './components/BoardStaff';
 import BoardAdmin from './components/BoardAdmin';
+import BookTrainingSession from './components/BookTrainingSession';
 
 // New management components
 import MembershipManagement from './components/MembershipManagement';
@@ -27,15 +28,15 @@ import { useAuth } from './context/AuthContext';
 
 const PrivateRoute = ({ children, roles }) => {
   const { user, isAuthenticated } = useAuth();
-  
+
   if (!isAuthenticated) {
     return <Navigate to="/login" />;
   }
-  
+
   if (roles && !roles.includes(user?.role)) {
     return <Navigate to="/" />;
   }
-  
+
   return children;
 };
 
@@ -55,7 +56,7 @@ function App() {
                 <Profile />
               </PrivateRoute>
             } />
-            
+
             {/* Role-based dashboards */}
             <Route path="/member" element={
               <PrivateRoute roles={['MEMBER']}>
@@ -77,7 +78,7 @@ function App() {
                 <BoardAdmin />
               </PrivateRoute>
             } />
-            
+
             {/* Management routes - Admin and Staff access */}
             <Route path="/memberships" element={
               <PrivateRoute roles={['ADMIN', 'STAFF']}>
@@ -92,6 +93,11 @@ function App() {
             <Route path="/training-sessions" element={
               <PrivateRoute roles={['ADMIN', 'STAFF', 'TRAINER']}>
                 <TrainingSessionManagement />
+              </PrivateRoute>
+            } />
+            <Route path="/book-session" element={
+              <PrivateRoute roles={['MEMBER']}>
+                <BookTrainingSession />
               </PrivateRoute>
             } />
             <Route path="/gym-classes" element={

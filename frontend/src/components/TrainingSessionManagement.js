@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Card, Button, Modal, Form, Alert, Badge, Table } from 'react-bootstrap';
-import axios from 'axios';
+import { trainingSessionAPI, userAPI } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
@@ -39,15 +39,7 @@ const TrainingSessionManagement = () => {
 
   const fetchSessions = async () => {
     try {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        setError('Authentication required');
-        return;
-      }
-      
-      const response = await axios.get('/api/training-sessions', {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const response = await trainingSessionAPI.getAll();
       setSessions(response.data);
     } catch (err) {
       if (err.response?.status === 401) {
@@ -63,14 +55,7 @@ const TrainingSessionManagement = () => {
 
   const fetchUsers = async () => {
     try {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        return;
-      }
-      
-      const response = await axios.get('/api/users', {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const response = await userAPI.getAll();
       setTrainers(response.data.filter(user => user.role === 'TRAINER'));
       setMembers(response.data.filter(user => user.role === 'MEMBER'));
     } catch (err) {
@@ -81,21 +66,16 @@ const TrainingSessionManagement = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const token = localStorage.getItem('token');
       const sessionData = {
         ...formData,
         scheduledDate: new Date(formData.scheduledDate).toISOString()
       };
 
       if (editingSession) {
-        await axios.put(`/api/training-sessions/${editingSession.id}`, sessionData, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
+        await trainingSessionAPI.update(editingSession.id, sessionData);
         setSuccess('Training session updated successfully');
       } else {
-        await axios.post('/api/training-sessions', sessionData, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
+        await trainingSessionAPI.create(sessionData);
         setSuccess('Training session created successfully');
       }
       setShowModal(false);
@@ -125,10 +105,7 @@ const TrainingSessionManagement = () => {
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this training session?')) {
       try {
-        const token = localStorage.getItem('token');
-        await axios.delete(`/api/training-sessions/${id}`, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
+        await trainingSessionAPI.delete(id);
         setSuccess('Training session deleted successfully');
         fetchSessions();
       } catch (err) {
@@ -139,10 +116,7 @@ const TrainingSessionManagement = () => {
 
   const handleStatusUpdate = async (id, status) => {
     try {
-      const token = localStorage.getItem('token');
-      await axios.put(`/api/training-sessions/${id}/status`, { status }, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      await trainingSessionAPI.updateStatus(id, status);
       setSuccess('Session status updated successfully');
       fetchSessions();
     } catch (err) {

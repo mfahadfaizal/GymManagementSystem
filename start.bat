@@ -1,22 +1,35 @@
 @echo off
-echo Starting Gym Management System...
+echo ========================================
+echo Gym Management System Startup Script
+echo ========================================
 echo.
 
-echo Starting Backend (Spring Boot)...
+echo Starting Backend...
 cd backend
-start "Backend" cmd /k "mvn spring-boot:run"
+start "Backend Server" cmd /k "mvn spring-boot:run"
 cd ..
 
 echo.
-echo Starting Frontend (React)...
+echo Waiting for backend to start...
+timeout /t 10 /nobreak > nul
+
+echo.
+echo Starting Frontend...
 cd frontend
-start "Frontend" cmd /k "npm start"
+start "Frontend Server" cmd /k "npm start"
 cd ..
 
 echo.
-echo Both services are starting...
-echo Backend will be available at: http://localhost:8080
-echo Frontend will be available at: http://localhost:3000
+echo ========================================
+echo Both servers are starting...
+echo Backend: http://localhost:8080
+echo Frontend: http://localhost:3000
+echo ========================================
 echo.
-echo Press any key to exit this script (services will continue running)
-pause > nul 
+echo Default users:
+echo - Admin: admin/admin123
+echo - Staff: staff/staff123
+echo - Trainer: trainer/trainer123
+echo - Member: member/member123
+echo.
+pause 

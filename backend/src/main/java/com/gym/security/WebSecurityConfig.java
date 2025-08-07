@@ -3,7 +3,6 @@ package com.gym.security;
 import com.gym.security.jwt.AuthEntryPointJwt;
 import com.gym.security.AuthTokenFilter;
 import com.gym.security.UserDetailsServiceImpl;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -27,13 +26,14 @@ import java.util.Arrays;
 @EnableWebSecurity
 @EnableMethodSecurity
 public class WebSecurityConfig {
+
     private final UserDetailsServiceImpl userDetailsService;
     private final AuthEntryPointJwt unauthorizedHandler;
     private final JwtUtils jwtUtils;
 
-    public WebSecurityConfig(UserDetailsServiceImpl userDetailsService, 
-                           AuthEntryPointJwt unauthorizedHandler,
-                           JwtUtils jwtUtils) {
+    public WebSecurityConfig(UserDetailsServiceImpl userDetailsService,
+                             AuthEntryPointJwt unauthorizedHandler,
+                             JwtUtils jwtUtils) {
         this.userDetailsService = userDetailsService;
         this.unauthorizedHandler = unauthorizedHandler;
         this.jwtUtils = jwtUtils;
@@ -47,10 +47,8 @@ public class WebSecurityConfig {
     @Bean
     public DaoAuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-        
         authProvider.setUserDetailsService(userDetailsService);
         authProvider.setPasswordEncoder(passwordEncoder());
-        
         return authProvider;
     }
 
@@ -67,20 +65,21 @@ public class WebSecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-    .csrf(csrf -> csrf.disable())
-    .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-    .authorizeHttpRequests(auth -> 
-        auth.requestMatchers("/api/auth/**").permitAll()
-            .requestMatchers("/api/test/**").permitAll()
-            .requestMatchers("/api/public/**").permitAll()
-            .anyRequest().authenticated()
-    )
-    .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-    .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
-    .authenticationProvider(authenticationProvider())
-    .addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
+            .csrf(csrf -> csrf.disable())
+            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+            .authorizeHttpRequests(auth -> auth
+                // Allow public access to auth and static files
+                .requestMatchers("/api/auth/**").permitAll()
+                .requestMatchers("/api/test/**", "/api/public/**").permitAll()
+                .requestMatchers("/favicon.ico", "/error", "/static/**", "/css/**", "/js/**", "/images/**").permitAll()
+                // All other endpoints require authentication
+                .anyRequest().authenticated()
+            )
+            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
+            .authenticationProvider(authenticationProvider())
+            .addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
 
-        
         return http.build();
     }
 
@@ -93,8 +92,9 @@ public class WebSecurityConfig {
         configuration.setExposedHeaders(Arrays.asList("x-auth-token"));
         configuration.setAllowCredentials(true);
         configuration.setMaxAge(3600L);
+
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
     }
-} 
+}

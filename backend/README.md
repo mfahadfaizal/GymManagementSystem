@@ -1,183 +1,278 @@
 # Gym Management System - Backend
 
-A comprehensive Spring Boot backend for a gym management system with role-based authentication and authorization.
+A comprehensive Spring Boot backend application for managing a gym with role-based authentication, JWT security, and full CRUD operations for gym management.
 
-## Features
+## 🚀 Quick Start
 
-- **JWT Authentication**: Secure token-based authentication
-- **Role-based Access Control**: Four user roles (MEMBER, TRAINER, STAFF, ADMIN)
-- **RESTful APIs**: Clean and well-structured REST endpoints
-- **MySQL Database**: Persistent data storage
-- **Spring Security**: Robust security implementation
-- **Data Validation**: Input validation and error handling
-
-## Technology Stack
-
-- **Java 17**
-- **Spring Boot 3.2.0**
-- **Spring Security**
-- **Spring Data JPA**
-- **MySQL 8.0**
-- **JWT (JSON Web Tokens)**
-- **Maven**
-
-## Prerequisites
-
+### Prerequisites
 - Java 17 or higher
-- MySQL 8.0 or higher
-- Maven 3.6 or higher
+- Maven (will be auto-installed if not present)
 
-## Database Setup
+### Running the Application
 
-1. Install MySQL if not already installed
-2. Create a database named `gym_management`
-3. Update database credentials in `application.properties`
-
-```sql
-CREATE DATABASE gym_management;
+#### Option 1: One-click start (Recommended)
+```bash
+.\start.bat
 ```
 
-## Configuration
-
-Update the database connection in `src/main/resources/application.properties`:
-
-```properties
-spring.datasource.url=jdbc:mysql://localhost:3306/gym_management?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC
-spring.datasource.username=your_username
-spring.datasource.password=your_password
+#### Option 2: Manual commands
+```bash
+mvn clean compile
+mvn spring-boot:run
 ```
 
-## Running the Application
+#### Option 3: IDE
+- Import as Maven project
+- Run `GymManagementApplication.java`
 
-1. **Clone the repository**
-2. **Navigate to the backend directory**
-   ```bash
-   cd backend
-   ```
-3. **Build the project**
-   ```bash
-   mvn clean install
-   ```
-4. **Run the application**
-   ```bash
-   mvn spring-boot:run
-   ```
+## 📋 Features
 
-The application will start on `http://localhost:8080`
+### 🔐 Authentication & Security
+- JWT-based authentication
+- Role-based authorization (ADMIN, TRAINER, STAFF, MEMBER)
+- Password encryption with BCrypt
+- CORS configuration for frontend integration
+- Stateless session management
 
-## API Endpoints
+### 🏋️ Core Modules
+- **User Management**: Complete user CRUD with role management
+- **Gym Classes**: Class scheduling, enrollment, and management
+- **Equipment**: Equipment tracking and maintenance
+- **Memberships**: Membership plans and status tracking
+- **Payments**: Payment processing and history
+- **Training Sessions**: Personal training session management
+- **Class Registrations**: Class enrollment and attendance
+
+### 📊 Sample Data
+The application automatically creates sample data on first run:
+- 4 users with different roles
+- Sample gym classes
+- Sample equipment
+- Sample memberships and payments
+
+## 🔑 Sample Users
+
+| Username | Password | Role | Email |
+|----------|----------|------|-------|
+| admin | admin123 | ADMIN | admin@gym.com |
+| trainer | trainer123 | TRAINER | trainer@gym.com |
+| staff | staff123 | STAFF | staff@gym.com |
+| member | member123 | MEMBER | member@gym.com |
+
+## 🌐 API Endpoints
 
 ### Authentication
 - `POST /api/auth/signin` - User login
 - `POST /api/auth/signup` - User registration
 
-### Test Endpoints (Role-based)
+### Test Endpoints
 - `GET /api/test/all` - Public access
-- `GET /api/test/member` - MEMBER role required
-- `GET /api/test/trainer` - TRAINER role required
-- `GET /api/test/staff` - STAFF role required
-- `GET /api/test/admin` - ADMIN role required
+- `GET /api/test/member` - Member access
+- `GET /api/test/trainer` - Trainer access
+- `GET /api/test/staff` - Staff access
+- `GET /api/test/admin` - Admin access
 
-## Sample Users
+### User Management
+- `GET /api/users` - Get all users (ADMIN/STAFF)
+- `GET /api/users/{id}` - Get user by ID
+- `PUT /api/users/{id}` - Update user
+- `DELETE /api/users/{id}` - Delete user (ADMIN)
 
-The application automatically creates sample users on first run:
+### Gym Classes
+- `GET /api/gym-classes` - Get all classes
+- `POST /api/gym-classes` - Create new class
+- `PUT /api/gym-classes/{id}` - Update class
+- `DELETE /api/gym-classes/{id}` - Delete class (ADMIN)
 
-| Username | Password | Role |
-|----------|----------|------|
-| admin | admin123 | ADMIN |
-| trainer | trainer123 | TRAINER |
-| staff | staff123 | STAFF |
-| member | member123 | MEMBER |
+### Equipment
+- `GET /api/equipment` - Get all equipment
+- `POST /api/equipment` - Add new equipment
+- `PUT /api/equipment/{id}` - Update equipment
+- `DELETE /api/equipment/{id}` - Delete equipment
 
-## Project Structure
+### Memberships
+- `GET /api/memberships` - Get all memberships
+- `POST /api/memberships` - Create membership
+- `PUT /api/memberships/{id}` - Update membership
+- `DELETE /api/memberships/{id}` - Delete membership
+
+### Payments
+- `GET /api/payments` - Get all payments
+- `POST /api/payments` - Create payment
+- `PUT /api/payments/{id}` - Update payment
+- `DELETE /api/payments/{id}` - Delete payment
+
+### Training Sessions
+- `GET /api/training-sessions` - Get all sessions
+- `POST /api/training-sessions` - Create session
+- `PUT /api/training-sessions/{id}` - Update session
+- `DELETE /api/training-sessions/{id}` - Delete session
+
+### Class Registrations
+- `GET /api/class-registrations` - Get all registrations
+- `POST /api/class-registrations` - Register for class
+- `PUT /api/class-registrations/{id}` - Update registration
+- `DELETE /api/class-registrations/{id}` - Cancel registration
+
+## 🗄️ Database
+
+### Development
+- **Type**: H2 in-memory database
+- **Auto-create**: Tables created automatically
+- **Sample data**: Loaded on startup
+
+### Production
+- **Type**: MySQL (configure in `application.properties`)
+- **URL**: `jdbc:mysql://localhost:3306/gym_management`
+- **Username**: `root`
+- **Password**: `password`
+
+## ⚙️ Configuration
+
+### Application Properties
+```properties
+# Database
+spring.datasource.url=jdbc:mysql://localhost:3306/gym_management
+spring.datasource.username=root
+spring.datasource.password=password
+
+# JWT
+jwt.secret=gymManagementSecretKey2024ForJWTTokenGenerationAndValidation
+jwt.expiration=86400000
+
+# Server
+server.port=8080
+```
+
+### Security Configuration
+- CORS enabled for all origins
+- JWT token validation
+- Role-based endpoint protection
+- Password encryption
+
+## 🧪 Testing
+
+### Manual Testing
+```bash
+# Test public endpoint
+curl http://localhost:8080/api/test/all
+
+# Test authentication
+curl -X POST http://localhost:8080/api/auth/signin \
+  -H "Content-Type: application/json" \
+  -d '{"username":"admin","password":"admin123"}'
+
+# Test protected endpoint with token
+curl -H "Authorization: Bearer YOUR_JWT_TOKEN" \
+  http://localhost:8080/api/test/admin
+```
+
+## 📁 Project Structure
 
 ```
 src/main/java/com/gym/
-├── GymManagementApplication.java
 ├── config/
-│   └── DataInitializer.java
+│   └── DataInitializer.java          # Sample data creation
 ├── controller/
-│   ├── AuthController.java
-│   └── TestController.java
+│   ├── AuthController.java           # Authentication endpoints
+│   ├── UserController.java           # User management
+│   ├── GymClassController.java       # Class management
+│   ├── EquipmentController.java      # Equipment management
+│   ├── MembershipController.java     # Membership management
+│   ├── PaymentController.java        # Payment management
+│   ├── TrainingSessionController.java # Training sessions
+│   └── ClassRegistrationController.java # Class registrations
 ├── entity/
-│   └── User.java
-├── payload/
-│   ├── request/
-│   │   ├── LoginRequest.java
-│   │   └── SignupRequest.java
-│   └── response/
-│       ├── JwtResponse.java
-│       └── MessageResponse.java
+│   ├── User.java                     # User entity
+│   ├── GymClass.java                 # Gym class entity
+│   ├── Equipment.java                # Equipment entity
+│   ├── Membership.java               # Membership entity
+│   ├── Payment.java                  # Payment entity
+│   ├── TrainingSession.java          # Training session entity
+│   └── ClassRegistration.java        # Class registration entity
 ├── repository/
-│   └── UserRepository.java
-└── security/
-    ├── AuthTokenFilter.java
-    ├── JwtUtils.java
-    ├── UserDetailsImpl.java
-    ├── UserDetailsServiceImpl.java
-    └── WebSecurityConfig.java
+│   ├── UserRepository.java           # User data access
+│   ├── GymClassRepository.java       # Class data access
+│   ├── EquipmentRepository.java      # Equipment data access
+│   ├── MembershipRepository.java     # Membership data access
+│   ├── PaymentRepository.java        # Payment data access
+│   ├── TrainingSessionRepository.java # Training session data access
+│   └── ClassRegistrationRepository.java # Registration data access
+├── service/
+│   ├── UserService.java              # User business logic
+│   ├── GymClassService.java          # Class business logic
+│   ├── EquipmentService.java         # Equipment business logic
+│   ├── MembershipService.java        # Membership business logic
+│   ├── PaymentService.java           # Payment business logic
+│   ├── TrainingSessionService.java   # Training session business logic
+│   └── ClassRegistrationService.java # Registration business logic
+├── security/
+│   ├── WebSecurityConfig.java        # Security configuration
+│   ├── JwtUtils.java                 # JWT utilities
+│   ├── AuthTokenFilter.java          # JWT filter
+│   ├── UserDetailsImpl.java          # User details implementation
+│   ├── UserDetailsServiceImpl.java   # User details service
+│   └── jwt/
+│       └── AuthEntryPointJwt.java    # JWT entry point
+├── payload/
+│   ├── request/                      # Request DTOs
+│   └── response/                     # Response DTOs
+└── GymManagementApplication.java     # Main application class
 ```
 
-## Security Features
+## 🛠️ Development
 
-- **JWT Token Authentication**: Stateless authentication
-- **Password Encryption**: BCrypt password hashing
-- **Role-based Authorization**: Method-level security
-- **CORS Configuration**: Cross-origin resource sharing
-- **Input Validation**: Request validation and sanitization
+### Adding New Features
+1. Create entity in `entity/` package
+2. Create repository in `repository/` package
+3. Create service in `service/` package
+4. Create controller in `controller/` package
+5. Add security configuration if needed
 
-## Database Schema
+### Database Changes
+- Entities use JPA annotations
+- Database schema auto-generated
+- Use `@PrePersist` and `@PreUpdate` for timestamps
 
-The application uses JPA/Hibernate to automatically create the database schema. The main table is:
+### Security
+- Use `@PreAuthorize` for method-level security
+- JWT tokens for authentication
+- Role-based access control
 
-```sql
-CREATE TABLE users (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    username VARCHAR(50) UNIQUE NOT NULL,
-    password VARCHAR(120) NOT NULL,
-    email VARCHAR(50) UNIQUE NOT NULL,
-    first_name VARCHAR(50) NOT NULL,
-    last_name VARCHAR(50) NOT NULL,
-    role ENUM('MEMBER', 'TRAINER', 'STAFF', 'ADMIN') NOT NULL,
-    enabled BOOLEAN DEFAULT TRUE
-);
-```
+## 🚨 Troubleshooting
 
-## Testing
+### Common Issues
 
-Run tests with:
-```bash
-mvn test
-```
+1. **Port 8080 already in use**
+   - Change port in `application.properties`
+   - Kill process using port 8080
 
-## API Documentation
+2. **Database connection failed**
+   - Check MySQL is running
+   - Verify database credentials
+   - Create database if it doesn't exist
 
-The application provides RESTful APIs for:
+3. **JWT token issues**
+   - Check JWT secret in properties
+   - Verify token expiration time
+   - Ensure proper Authorization header
 
-1. **User Authentication**: Login and registration
-2. **Role-based Access**: Different endpoints for different user roles
-3. **User Management**: Profile management and user operations
+4. **CORS issues**
+   - Check CORS configuration in `WebSecurityConfig`
+   - Verify frontend origin
 
-## Future Enhancements
+## 📞 Support
 
-- Equipment management
-- Membership tracking
-- Training session scheduling
-- Payment processing
-- Reporting and analytics
-- Email notifications
-- File upload capabilities
+For issues and questions:
+1. Check the `BACKEND_ISSUES_FIXED.md` file
+2. Review application logs
+3. Test individual endpoints
+4. Verify database connectivity
 
-## Troubleshooting
+## 🔄 Version History
 
-1. **Database Connection Issues**: Verify MySQL is running and credentials are correct
-2. **Port Conflicts**: Change the port in `application.properties` if 8080 is occupied
-3. **JWT Issues**: Check the JWT secret in `application.properties`
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests if applicable
-5. Submit a pull request 
+- **v1.0.0**: Initial release with all core features
+- Fixed compilation issues
+- Added Maven installation scripts
+- Implemented JWT authentication
+- Added comprehensive API endpoints 

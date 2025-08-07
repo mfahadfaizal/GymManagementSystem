@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Card, Button, Modal, Form, Alert, Badge, Table } from 'react-bootstrap';
-import axios from 'axios';
+import { gymClassAPI, userAPI } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
@@ -40,15 +40,7 @@ const GymClassManagement = () => {
 
   const fetchClasses = async () => {
     try {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        setError('Authentication required');
-        return;
-      }
-      
-      const response = await axios.get('/api/gym-classes', {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const response = await gymClassAPI.getAll();
       setClasses(response.data);
     } catch (err) {
       if (err.response?.status === 401) {
@@ -64,14 +56,7 @@ const GymClassManagement = () => {
 
   const fetchTrainers = async () => {
     try {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        return;
-      }
-      
-      const response = await axios.get('/api/users', {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const response = await userAPI.getAll();
       setTrainers(response.data.filter(user => user.role === 'TRAINER'));
     } catch (err) {
       console.error('Failed to fetch trainers');
@@ -81,21 +66,16 @@ const GymClassManagement = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const token = localStorage.getItem('token');
       const classData = {
         ...formData,
         scheduleDays: formData.scheduleDays.join(',')
       };
 
       if (editingClass) {
-        await axios.put(`/api/gym-classes/${editingClass.id}`, classData, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
+        await gymClassAPI.update(editingClass.id, classData);
         setSuccess('Gym class updated successfully');
       } else {
-        await axios.post('/api/gym-classes', classData, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
+        await gymClassAPI.create(classData);
         setSuccess('Gym class created successfully');
       }
       setShowModal(false);
@@ -127,10 +107,7 @@ const GymClassManagement = () => {
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this gym class?')) {
       try {
-        const token = localStorage.getItem('token');
-        await axios.delete(`/api/gym-classes/${id}`, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
+        await gymClassAPI.delete(id);
         setSuccess('Gym class deleted successfully');
         fetchClasses();
       } catch (err) {
@@ -141,10 +118,7 @@ const GymClassManagement = () => {
 
   const handleStatusUpdate = async (id, status) => {
     try {
-      const token = localStorage.getItem('token');
-      await axios.put(`/api/gym-classes/${id}/status`, { status }, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      await gymClassAPI.updateStatus(id, status);
       setSuccess('Class status updated successfully');
       fetchClasses();
     } catch (err) {

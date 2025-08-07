@@ -138,9 +138,6 @@ const Register = () => {
                       onChange={handleChange}
                     >
                       <option value="member">Member</option>
-                      <option value="trainer">Trainer</option>
-                      <option value="staff">Staff</option>
-                      <option value="admin">Admin</option>
                     </Form.Select>
                   </Form.Group>
 

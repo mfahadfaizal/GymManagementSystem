@@ -12,35 +12,30 @@ const BoardAdmin = () => {
         <Col md={6}>
           <Card className="mb-4">
             <Card.Header>
-              <h5>👥 User Management</h5>
+              <h5>👥 User Summary</h5>
             </Card.Header>
             <Card.Body>
               <ListGroup variant="flush">
                 <ListGroup.Item>
-                  <strong>Total Users:</strong> 150
-                  <Badge bg="info" className="ms-2">Active</Badge>
+                  <strong>Total Users:</strong> 150 <Badge bg="info" className="ms-2">Active</Badge>
                 </ListGroup.Item>
                 <ListGroup.Item>
-                  <strong>Members:</strong> 120
-                  <Badge bg="success" className="ms-2">Active</Badge>
+                  <strong>Members:</strong> 120 <Badge bg="success" className="ms-2">Active</Badge>
                 </ListGroup.Item>
                 <ListGroup.Item>
-                  <strong>Trainers:</strong> 8
-                  <Badge bg="primary" className="ms-2">Active</Badge>
+                  <strong>Trainers:</strong> 8 <Badge bg="primary" className="ms-2">Active</Badge>
                 </ListGroup.Item>
                 <ListGroup.Item>
-                  <strong>Staff:</strong> 12
-                  <Badge bg="warning" className="ms-2">Active</Badge>
+                  <strong>Staff:</strong> 12 <Badge bg="warning" className="ms-2">Active</Badge>
                 </ListGroup.Item>
                 <ListGroup.Item>
-                  <strong>Admins:</strong> 3
-                  <Badge bg="danger" className="ms-2">Active</Badge>
+                  <strong>Admins:</strong> 3 <Badge bg="danger" className="ms-2">Active</Badge>
                 </ListGroup.Item>
               </ListGroup>
             </Card.Body>
           </Card>
         </Col>
-        
+
         <Col md={6}>
           <Card className="mb-4">
             <Card.Header>
@@ -49,34 +44,30 @@ const BoardAdmin = () => {
             <Card.Body>
               <ListGroup variant="flush">
                 <ListGroup.Item>
-                  <strong>Revenue This Month:</strong> $45,000
-                  <Badge bg="success" className="ms-2">+12%</Badge>
+                  <strong>Revenue This Month:</strong> $45,000 <Badge bg="success" className="ms-2">+12%</Badge>
                 </ListGroup.Item>
                 <ListGroup.Item>
-                  <strong>New Memberships:</strong> 25
-                  <Badge bg="info" className="ms-2">This Month</Badge>
+                  <strong>New Memberships:</strong> 25 <Badge bg="info" className="ms-2">This Month</Badge>
                 </ListGroup.Item>
                 <ListGroup.Item>
-                  <strong>System Uptime:</strong> 99.9%
-                  <Badge bg="success" className="ms-2">Excellent</Badge>
+                  <strong>System Uptime:</strong> 99.9% <Badge bg="success" className="ms-2">Excellent</Badge>
                 </ListGroup.Item>
                 <ListGroup.Item>
-                  <strong>Active Sessions:</strong> 45
-                  <Badge bg="primary" className="ms-2">Current</Badge>
+                  <strong>Active Sessions:</strong> 45 <Badge bg="primary" className="ms-2">Current</Badge>
                 </ListGroup.Item>
               </ListGroup>
             </Card.Body>
           </Card>
         </Col>
       </Row>
-      
+
       <Row>
         <Col md={4}>
           <Card className="text-center">
             <Card.Body>
-              <h5>👤 User Management</h5>
-              <p>Manage all users and their roles</p>
-              <Button variant="primary" as={Link} to="/profile">Manage Users</Button>
+              <h5>📄 Membership Management</h5>
+              <p>Manage all gym member subscriptions</p>
+              <Button variant="primary" as={Link} to="/memberships">Manage Memberships</Button>
             </Card.Body>
           </Card>
         </Col>
@@ -85,7 +76,7 @@ const BoardAdmin = () => {
           <Card className="text-center">
             <Card.Body>
               <h5>💰 Financial Reports</h5>
-              <p>View financial reports and analytics</p>
+              <p>View and process all payments</p>
               <Button variant="info" as={Link} to="/payments">View Reports</Button>
             </Card.Body>
           </Card>
@@ -95,8 +86,8 @@ const BoardAdmin = () => {
           <Card className="text-center">
             <Card.Body>
               <h5>⚙️ System Settings</h5>
-              <p>Configure system settings and preferences</p>
-              <Button variant="success">System Settings</Button>
+              <p>Configure application settings</p>
+              <Button variant="success" disabled>Coming Soon</Button>
             </Card.Body>
           </Card>
         </Col>
@@ -125,7 +116,7 @@ const BoardAdmin = () => {
                   <Card className="text-center mb-3">
                     <Card.Body>
                       <h6>Equipment</h6>
-                      <p>Track gym equipment</p>
+                      <p>Track and update gym equipment</p>
                       <Button size="sm" variant="outline-warning" as={Link} to="/equipment">
                         Manage Equipment
                       </Button>
@@ -136,7 +127,7 @@ const BoardAdmin = () => {
                   <Card className="text-center mb-3">
                     <Card.Body>
                       <h6>Training Sessions</h6>
-                      <p>Schedule personal training</p>
+                      <p>Schedule and assign trainers</p>
                       <Button size="sm" variant="outline-info" as={Link} to="/training-sessions">
                         Manage Sessions
                       </Button>
@@ -147,7 +138,7 @@ const BoardAdmin = () => {
                   <Card className="text-center mb-3">
                     <Card.Body>
                       <h6>Gym Classes</h6>
-                      <p>Manage group classes</p>
+                      <p>Organize group workouts</p>
                       <Button size="sm" variant="outline-success" as={Link} to="/gym-classes">
                         Manage Classes
                       </Button>
@@ -155,12 +146,13 @@ const BoardAdmin = () => {
                   </Card>
                 </Col>
               </Row>
+
               <Row>
                 <Col md={6}>
                   <Card className="text-center mb-3">
                     <Card.Body>
                       <h6>Class Registrations</h6>
-                      <p>Track class enrollments</p>
+                      <p>Track who enrolled in what</p>
                       <Button size="sm" variant="outline-secondary" as={Link} to="/class-registrations">
                         Manage Registrations
                       </Button>
@@ -171,7 +163,7 @@ const BoardAdmin = () => {
                   <Card className="text-center mb-3">
                     <Card.Body>
                       <h6>Payments</h6>
-                      <p>Process payments and invoices</p>
+                      <p>View invoices and receipts</p>
                       <Button size="sm" variant="outline-danger" as={Link} to="/payments">
                         Manage Payments
                       </Button>
@@ -183,7 +175,7 @@ const BoardAdmin = () => {
           </Card>
         </Col>
       </Row>
-      
+
       <Row className="mt-4">
         <Col md={12}>
           <Card>
@@ -221,7 +213,7 @@ const BoardAdmin = () => {
           </Card>
         </Col>
       </Row>
-      
+
       <Row className="mt-4">
         <Col md={12}>
           <Card>
@@ -269,7 +261,7 @@ const BoardAdmin = () => {
           </Card>
         </Col>
       </Row>
-      
+
       <Row className="mt-4">
         <Col md={12}>
           <Card>
@@ -299,4 +291,4 @@ const BoardAdmin = () => {
   );
 };
 
-export default BoardAdmin; 
+export default BoardAdmin;

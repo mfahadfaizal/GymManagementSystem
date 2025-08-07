@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Card, Button, Modal, Form, Alert, Badge, Table } from 'react-bootstrap';
-import axios from 'axios';
+import { equipmentAPI } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
@@ -38,15 +38,7 @@ const EquipmentManagement = () => {
 
   const fetchEquipment = async () => {
     try {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        setError('Authentication required');
-        return;
-      }
-      
-      const response = await axios.get('/api/equipment', {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const response = await equipmentAPI.getAll();
       setEquipment(response.data);
     } catch (err) {
       if (err.response?.status === 401) {
@@ -63,16 +55,11 @@ const EquipmentManagement = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const token = localStorage.getItem('token');
       if (editingEquipment) {
-        await axios.put(`/api/equipment/${editingEquipment.id}`, formData, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
+        await equipmentAPI.update(editingEquipment.id, formData);
         setSuccess('Equipment updated successfully');
       } else {
-        await axios.post('/api/equipment', formData, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
+        await equipmentAPI.create(formData);
         setSuccess('Equipment added successfully');
       }
       setShowModal(false);
@@ -104,10 +91,7 @@ const EquipmentManagement = () => {
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this equipment?')) {
       try {
-        const token = localStorage.getItem('token');
-        await axios.delete(`/api/equipment/${id}`, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
+        await equipmentAPI.delete(id);
         setSuccess('Equipment deleted successfully');
         fetchEquipment();
       } catch (err) {
@@ -118,10 +102,7 @@ const EquipmentManagement = () => {
 
   const handleStatusUpdate = async (id, status) => {
     try {
-      const token = localStorage.getItem('token');
-      await axios.put(`/api/equipment/${id}/status`, { status }, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      await equipmentAPI.updateStatus(id, status);
       setSuccess('Equipment status updated successfully');
       fetchEquipment();
     } catch (err) {

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Card, Button, Modal, Form, Alert, Badge, Table } from 'react-bootstrap';
-import axios from 'axios';
+import { paymentAPI, userAPI } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
@@ -37,15 +37,7 @@ const PaymentManagement = () => {
 
   const fetchPayments = async () => {
     try {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        setError('Authentication required');
-        return;
-      }
-      
-      const response = await axios.get('/api/payments', {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const response = await paymentAPI.getAll();
       setPayments(response.data);
     } catch (err) {
       if (err.response?.status === 401) {
@@ -61,14 +53,7 @@ const PaymentManagement = () => {
 
   const fetchUsers = async () => {
     try {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        return;
-      }
-      
-      const response = await axios.get('/api/users', {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const response = await userAPI.getAll();
       setUsers(response.data);
     } catch (err) {
       console.error('Failed to fetch users');
@@ -78,16 +63,11 @@ const PaymentManagement = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const token = localStorage.getItem('token');
       if (editingPayment) {
-        await axios.put(`/api/payments/${editingPayment.id}`, formData, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
+        await paymentAPI.update(editingPayment.id, formData);
         setSuccess('Payment updated successfully');
       } else {
-        await axios.post('/api/payments', formData, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
+        await paymentAPI.create(formData);
         setSuccess('Payment created successfully');
       }
       setShowModal(false);
@@ -116,10 +96,7 @@ const PaymentManagement = () => {
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this payment?')) {
       try {
-        const token = localStorage.getItem('token');
-        await axios.delete(`/api/payments/${id}`, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
+        await paymentAPI.delete(id);
         setSuccess('Payment deleted successfully');
         fetchPayments();
       } catch (err) {
@@ -130,10 +107,7 @@ const PaymentManagement = () => {
 
   const handleStatusUpdate = async (id, status) => {
     try {
-      const token = localStorage.getItem('token');
-      await axios.put(`/api/payments/${id}/status`, { status }, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      await paymentAPI.updateStatus(id, status);
       setSuccess('Payment status updated successfully');
       fetchPayments();
     } catch (err) {

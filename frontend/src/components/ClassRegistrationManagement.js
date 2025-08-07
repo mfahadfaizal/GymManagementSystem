@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Card, Button, Modal, Form, Alert, Badge, Table } from 'react-bootstrap';
-import axios from 'axios';
+import { classRegistrationAPI, gymClassAPI, userAPI } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
@@ -35,15 +35,7 @@ const ClassRegistrationManagement = () => {
 
   const fetchRegistrations = async () => {
     try {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        setError('Authentication required');
-        return;
-      }
-      
-      const response = await axios.get('/api/class-registrations', {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const response = await classRegistrationAPI.getAll();
       setRegistrations(response.data);
     } catch (err) {
       if (err.response?.status === 401) {
@@ -59,14 +51,7 @@ const ClassRegistrationManagement = () => {
 
   const fetchClasses = async () => {
     try {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        return;
-      }
-      
-      const response = await axios.get('/api/gym-classes', {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const response = await gymClassAPI.getAll();
       setClasses(response.data);
     } catch (err) {
       console.error('Failed to fetch classes');
@@ -75,14 +60,7 @@ const ClassRegistrationManagement = () => {
 
   const fetchMembers = async () => {
     try {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        return;
-      }
-      
-      const response = await axios.get('/api/users', {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const response = await userAPI.getAll();
       setMembers(response.data.filter(user => user.role === 'MEMBER'));
     } catch (err) {
       console.error('Failed to fetch members');
@@ -92,20 +70,11 @@ const ClassRegistrationManagement = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        setError('Authentication required');
-        return;
-      }
       if (editingRegistration) {
-        await axios.put(`/api/class-registrations/${editingRegistration.id}`, formData, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
+        await classRegistrationAPI.update(editingRegistration.id, formData);
         setSuccess('Registration updated successfully');
       } else {
-        await axios.post('/api/class-registrations', formData, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
+        await classRegistrationAPI.create(formData);
         setSuccess('Registration created successfully');
       }
       setShowModal(false);
@@ -136,14 +105,7 @@ const ClassRegistrationManagement = () => {
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this registration?')) {
       try {
-        const token = localStorage.getItem('token');
-        if (!token) {
-          setError('Authentication required');
-          return;
-        }
-        await axios.delete(`/api/class-registrations/${id}`, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
+        await classRegistrationAPI.delete(id);
         setSuccess('Registration deleted successfully');
         fetchRegistrations();
         fetchClasses();
@@ -160,14 +122,7 @@ const ClassRegistrationManagement = () => {
 
   const handleStatusUpdate = async (id, status) => {
     try {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        setError('Authentication required');
-        return;
-      }
-      await axios.put(`/api/class-registrations/${id}/status`, { status }, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      await classRegistrationAPI.updateStatus(id, status);
       setSuccess('Registration status updated successfully');
       fetchRegistrations();
     } catch (err) {

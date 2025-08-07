@@ -18,7 +18,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -86,31 +85,31 @@ public class AuthController {
                 User.Role.MEMBER); // Default role is MEMBER
 
         Set<String> strRoles = signUpRequest.getRole();
-        Set<User.Role> roles = new HashSet<>();
+        User.Role selectedRole = User.Role.MEMBER; // Default role
 
-        if (strRoles == null) {
-            roles.add(User.Role.MEMBER);
-        } else {
-            strRoles.forEach(role -> {
-                switch (role) {
-                    case "admin":
-                        roles.add(User.Role.ADMIN);
-                        break;
-                    case "trainer":
-                        roles.add(User.Role.TRAINER);
-                        break;
-                    case "staff":
-                        roles.add(User.Role.STAFF);
-                        break;
-                    default:
-                        roles.add(User.Role.MEMBER);
-                }
-            });
+        if (strRoles != null && !strRoles.isEmpty()) {
+            String role = strRoles.iterator().next().toLowerCase(); // Take the first role, lowercase
+            switch (role) {
+                case "admin":
+                    selectedRole = User.Role.ADMIN;
+                    break;
+                case "trainer":
+                    selectedRole = User.Role.TRAINER;
+                    break;
+                case "staff":
+                    selectedRole = User.Role.STAFF;
+                    break;
+                default:
+                    selectedRole = User.Role.MEMBER;
+            }
         }
 
-        user.setRole(roles.iterator().next()); // For simplicity, we'll use the first role
-        userRepository.save(user);
+        user.setRole(selectedRole);
+        User savedUser = userRepository.save(user);
 
-        return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
+        // Hide password before returning the user
+        savedUser.setPassword(null);
+
+        return ResponseEntity.ok(savedUser);
     }
-} 
+}

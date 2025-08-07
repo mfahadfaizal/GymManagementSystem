@@ -16,40 +16,57 @@ export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  // Authentication state management
   useEffect(() => {
     const token = localStorage.getItem('token');
-    const userData = localStorage.getItem('user');
-    
-    if (token && userData) {
-      setUser(JSON.parse(userData));
+    const storedUser = localStorage.getItem('user');
+  
+    if (token && storedUser) {
+      const parsedUser = JSON.parse(storedUser);
+  
+      if (parsedUser.roles && parsedUser.roles.length > 0) {
+        parsedUser.role = parsedUser.roles[0].replace('ROLE_', '');
+      }
+  
+      setUser(parsedUser);
       setIsAuthenticated(true);
     }
-    
+  
     setLoading(false);
   }, []);
+  
 
 
 
   const login = async (username, password) => {
     try {
       const response = await authAPI.login({ username, password });
-      const { accessToken, ...userData } = response.data;
-      
+  
+      const { accessToken, roles, ...rest } = response.data;
+  
+      // Normalize role (e.g., 'ROLE_ADMIN' → 'ADMIN')
+      const normalizedRole = roles[0].replace('ROLE_', '');
+  
+      const userData = {
+        ...rest,
+        roles,
+        role: normalizedRole, // ← Store this for easy access
+      };
+  
       localStorage.setItem('token', accessToken);
       localStorage.setItem('user', JSON.stringify(userData));
-      
+  
       setUser(userData);
       setIsAuthenticated(true);
-      
+  
       return { success: true };
     } catch (error) {
-      return { 
-        success: false, 
-        message: error.response?.data?.message || 'Login failed' 
+      return {
+        success: false,
+        message: error.response?.data?.message || 'Login failed',
       };
     }
   };
+  
 
   const register = async (userData) => {
     try {

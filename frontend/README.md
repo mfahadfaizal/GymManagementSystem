@@ -1,235 +1,225 @@
 # Gym Management System - Frontend
 
-A comprehensive React-based frontend for the Gym Management System with role-based access control and full CRUD operations for gym entities.
+A modern React-based frontend application for managing a gym with role-based access control, real-time data management, and intuitive user interface.
 
-## Features
+## 🚀 Quick Start
 
-### Authentication & Authorization
-- **User Registration**: Multi-role registration (Member, Trainer, Staff, Admin)
-- **User Login**: JWT-based authentication
-- **Role-based Access Control**: Different dashboards and permissions for each role
-- **Profile Management**: View and update user information
+### Prerequisites
+- Node.js 16 or higher
+- npm or yarn
+- Backend server running on http://localhost:8080
 
-### Role-Specific Dashboards
-- **Admin Dashboard**: Full system administration with access to all management features
-- **Staff Dashboard**: Gym operations management (memberships, equipment, classes, payments)
-- **Trainer Dashboard**: Training session and class registration management
-- **Member Dashboard**: Personal activity tracking and class viewing
+### Running the Application
 
-### Management Components
+#### Option 1: One-click start (Recommended)
+```bash
+.\start.bat
+```
 
-#### Membership Management
-- Create, read, update, and delete memberships
-- Track membership types (Basic, Premium, VIP, Student)
-- Monitor membership status (Active, Expired, Cancelled, Pending)
-- Manage membership dates and pricing
+#### Option 2: Manual commands
+```bash
+npm install
+npm start
+```
 
-#### Equipment Management
-- Full CRUD operations for gym equipment
-- Track equipment types (Cardio, Strength, Flexibility, Functional)
-- Monitor equipment status (Available, In Use, Maintenance, Out of Service)
-- Manage maintenance schedules and warranty information
+#### Option 3: Using yarn
+```bash
+yarn install
+yarn start
+```
 
-#### Training Session Management
-- Schedule and manage personal training sessions
-- Track session types (Personal, Group, Assessment, Nutrition)
-- Monitor session status (Scheduled, In Progress, Completed, Cancelled)
-- Manage trainer-member assignments and session details
+## 📋 Features
 
-#### Gym Class Management
-- Create and manage group fitness classes
-- Track class types (Cardio, Strength, Yoga, Pilates, Spinning, Zumba)
-- Monitor class capacity and enrollment
-- Manage class schedules and trainer assignments
+### 🔐 Authentication & Authorization
+- JWT-based authentication
+- Role-based access control (ADMIN, TRAINER, STAFF, MEMBER)
+- Secure token storage
+- Automatic token refresh
+- Protected routes
 
-#### Class Registration Management
-- Register members for gym classes
-- Track registration status (Registered, Attended, No Show, Cancelled)
-- Monitor attendance and class capacity
-- Manage class enrollments and cancellations
+### 🏋️ Core Modules
+- **User Management**: Complete user CRUD with role management
+- **Gym Classes**: Class scheduling, enrollment, and management
+- **Equipment**: Equipment tracking and maintenance
+- **Memberships**: Membership plans and status tracking
+- **Payments**: Payment processing and history
+- **Training Sessions**: Personal training session management
+- **Class Registrations**: Class enrollment and attendance
 
-#### Payment Management
-- Process and track payments
-- Support multiple payment types (Membership, Class, Training, Equipment, Other)
-- Track payment methods (Cash, Card, Bank Transfer, Check, Digital Wallet)
-- Monitor payment status (Pending, Completed, Cancelled, Refunded, Overdue)
+### 🎨 User Interface
+- Modern Bootstrap-based design
+- Responsive layout for all devices
+- Intuitive navigation
+- Real-time data updates
+- Form validation
+- Success/error notifications
 
-### Navigation & User Experience
-- **Global Navigation**: Role-based navigation bar with easy access to all features
-- **Responsive Design**: Mobile-friendly interface using React Bootstrap
-- **Real-time Updates**: Immediate feedback for all CRUD operations
-- **Error Handling**: Comprehensive error messages and validation
-- **Loading States**: Visual feedback during API operations
+## 🔑 Sample Users
 
-## Technology Stack
+| Username | Password | Role | Access Level |
+|----------|----------|------|--------------|
+| admin | admin123 | ADMIN | Full access to all features |
+| trainer | trainer123 | TRAINER | Training sessions, class registrations |
+| staff | staff123 | STAFF | Equipment, memberships, payments |
+| member | member123 | MEMBER | View own profile and registrations |
 
-- **React 18.2.0**: Modern React with hooks and functional components
-- **React Router DOM 6.11.2**: Client-side routing
-- **React Bootstrap 2.8.0**: UI components and responsive design
-- **Axios 1.4.0**: HTTP client for API communication
-- **Bootstrap 5.3.0**: CSS framework for styling
-- **Context API**: State management for authentication
+## 🌐 Application Routes
 
-## Project Structure
+### Public Routes
+- `/` - Home page
+- `/login` - User authentication
+- `/register` - User registration
+- `/test-auth` - Authentication testing
+
+### Protected Routes (Role-based)
+- `/profile` - User profile management
+- `/member` - Member dashboard
+- `/trainer` - Trainer dashboard
+- `/staff` - Staff dashboard
+- `/admin` - Admin dashboard
+
+### Management Routes
+- `/memberships` - Membership management (ADMIN/STAFF)
+- `/equipment` - Equipment management (ADMIN/STAFF)
+- `/training-sessions` - Training session management (ADMIN/STAFF/TRAINER)
+- `/gym-classes` - Gym class management (ADMIN/STAFF)
+- `/class-registrations` - Class registration management (ADMIN/STAFF/TRAINER)
+- `/payments` - Payment management (ADMIN/STAFF)
+
+## 🛠️ Technology Stack
+
+- **React 18** - Modern React with hooks
+- **React Router 6** - Client-side routing
+- **React Bootstrap** - UI components
+- **Axios** - HTTP client for API calls
+- **Context API** - State management
+- **Bootstrap 5** - CSS framework
+
+## 📁 Project Structure
 
 ```
 src/
-├── components/
-│   ├── Navigation.js              # Global navigation component
-│   ├── Login.js                   # User authentication
-│   ├── Register.js                # User registration
-│   ├── Home.js                    # Landing page
-│   ├── Profile.js                 # User profile management
-│   ├── BoardAdmin.js              # Admin dashboard
-│   ├── BoardStaff.js              # Staff dashboard
-│   ├── BoardTrainer.js            # Trainer dashboard
-│   ├── BoardMember.js             # Member dashboard
-│   ├── MembershipManagement.js    # Membership CRUD operations
-│   ├── EquipmentManagement.js     # Equipment CRUD operations
+├── components/                    # React components
+│   ├── Login.js                  # Authentication component
+│   ├── Register.js               # Registration component
+│   ├── Navigation.js             # Navigation bar
+│   ├── Home.js                   # Home page
+│   ├── Profile.js                # User profile
+│   ├── BoardAdmin.js             # Admin dashboard
+│   ├── BoardStaff.js             # Staff dashboard
+│   ├── BoardTrainer.js           # Trainer dashboard
+│   ├── BoardMember.js            # Member dashboard
+│   ├── GymClassManagement.js     # Class management
+│   ├── EquipmentManagement.js    # Equipment management
+│   ├── MembershipManagement.js   # Membership management
+│   ├── PaymentManagement.js      # Payment management
 │   ├── TrainingSessionManagement.js # Training session management
-│   ├── GymClassManagement.js      # Gym class management
 │   ├── ClassRegistrationManagement.js # Class registration management
-│   └── PaymentManagement.js       # Payment management
+│   └── TestAuth.js               # Authentication testing
 ├── context/
-│   └── AuthContext.js             # Authentication context
-├── App.js                         # Main application component
-├── App.css                        # Custom styles
-└── index.js                       # Application entry point
+│   └── AuthContext.js            # Authentication context
+├── services/
+│   └── api.js                    # API service functions
+├── App.js                        # Main application component
+├── App.css                       # Application styles
+├── index.js                      # Application entry point
+└── index.css                     # Global styles
 ```
 
-## Getting Started
+## 🔧 Configuration
 
-### Prerequisites
-- Node.js (v14 or higher)
-- npm or yarn
-- Backend server running on port 8080
+### Environment Variables
+Create a `.env` file in the frontend directory:
 
-### Installation
-1. Navigate to the frontend directory:
-   ```bash
-   cd frontend
-   ```
+```env
+REACT_APP_API_URL=http://localhost:8080
+REACT_APP_ENVIRONMENT=development
+```
 
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
+### API Configuration
+The application is configured to connect to the backend at `http://localhost:8080` by default. This can be changed in the `package.json` proxy setting or environment variables.
 
-3. Start the development server:
-   ```bash
-   npm start
-   ```
+## 🧪 Testing
 
-4. Open [http://localhost:3000](http://localhost:3000) in your browser
+### Manual Testing
+1. **Authentication Test**
+   - Navigate to `/login`
+   - Use sample credentials to test login
+   - Verify role-based access
 
-### Available Scripts
-- `npm start`: Start development server
-- `npm build`: Build for production
-- `npm test`: Run tests
-- `npm eject`: Eject from Create React App
+2. **API Integration Test**
+   - Navigate to `/test-auth`
+   - Test API endpoints with authentication
 
-## API Integration
+3. **Feature Testing**
+   - Test CRUD operations for each module
+   - Verify form validation
+   - Test responsive design
 
-The frontend communicates with the Spring Boot backend through RESTful APIs:
+### Automated Testing
+```bash
+npm test
+```
 
-- **Base URL**: `http://localhost:8080`
-- **Authentication**: JWT tokens stored in localStorage
-- **CORS**: Configured for cross-origin requests
-- **Error Handling**: Comprehensive error handling for API failures
+## 🚨 Troubleshooting
 
-## Role-Based Access
+### Common Issues
 
-### Admin (Full Access)
-- All management components
-- User management
-- System administration
-- Financial reports
+1. **Backend Connection Failed**
+   - Ensure backend is running on port 8080
+   - Check CORS configuration
+   - Verify API endpoints
 
-### Staff (Operational Access)
-- Membership management
-- Equipment management
-- Gym class management
-- Payment processing
+2. **Authentication Issues**
+   - Clear browser localStorage
+   - Check JWT token expiration
+   - Verify user credentials
 
-### Trainer (Training Access)
-- Training session management
-- Class registration management
-- Client progress tracking
+3. **Build Errors**
+   - Clear node_modules and reinstall
+   - Check Node.js version compatibility
+   - Verify all dependencies
 
-### Member (Limited Access)
-- View training sessions
-- Browse gym classes
-- Check class registrations
-- View personal progress
+4. **CORS Issues**
+   - Ensure backend CORS is configured
+   - Check proxy settings in package.json
+   - Verify API URL configuration
 
-## Sample Users
+## 🔄 Development
 
-For testing purposes, the following users are pre-configured:
+### Adding New Features
+1. Create component in `src/components/`
+2. Add route in `App.js`
+3. Update API service if needed
+4. Add role-based access control
+5. Test thoroughly
 
-| Username | Password | Role |
-|----------|----------|------|
-| admin    | admin123 | Admin |
-| trainer   | trainer123 | Trainer |
-| staff     | staff123 | Staff |
-| member    | member123 | Member |
+### Code Style
+- Use functional components with hooks
+- Follow React best practices
+- Use Bootstrap classes for styling
+- Implement proper error handling
 
-## Features in Detail
+### State Management
+- Use Context API for global state
+- Use local state for component-specific data
+- Implement proper loading states
+- Handle API errors gracefully
 
-### Membership Management
-- **Create Memberships**: Assign memberships to users with type, price, and dates
-- **Update Memberships**: Modify membership details and status
-- **Status Tracking**: Monitor active, expired, and cancelled memberships
-- **Type Management**: Support for Basic, Premium, VIP, and Student memberships
+## 📞 Support
 
-### Equipment Management
-- **Equipment Tracking**: Complete inventory management
-- **Maintenance Scheduling**: Track maintenance dates and schedules
-- **Status Monitoring**: Real-time equipment availability
-- **Location Management**: Track equipment placement
+For issues and questions:
+1. Check the backend is running
+2. Verify API endpoints are accessible
+3. Check browser console for errors
+4. Review authentication flow
+5. Test with sample users
 
-### Training Sessions
-- **Session Scheduling**: Book personal training sessions
-- **Trainer Assignment**: Assign trainers to members
-- **Status Management**: Track session progress and completion
-- **Conflict Detection**: Prevent double-booking
+## 🔄 Version History
 
-### Gym Classes
-- **Class Creation**: Set up group fitness classes
-- **Capacity Management**: Monitor enrollment limits
-- **Schedule Management**: Manage class times and days
-- **Trainer Assignment**: Assign trainers to classes
-
-### Class Registrations
-- **Enrollment Management**: Register members for classes
-- **Attendance Tracking**: Mark attendance and no-shows
-- **Capacity Control**: Prevent over-enrollment
-- **Status Updates**: Track registration status changes
-
-### Payment Processing
-- **Payment Creation**: Generate payments for various services
-- **Status Tracking**: Monitor payment completion and refunds
-- **Method Support**: Multiple payment method options
-- **Financial Reporting**: Track revenue and outstanding payments
-
-## Future Enhancements
-
-- **Real-time Notifications**: WebSocket integration for live updates
-- **Advanced Reporting**: Charts and analytics dashboard
-- **Mobile App**: React Native version
-- **Offline Support**: Service worker for offline functionality
-- **Multi-language Support**: Internationalization
-- **Advanced Search**: Filtering and search capabilities
-- **File Upload**: Profile pictures and document management
-- **Calendar Integration**: Sync with external calendars
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests if applicable
-5. Submit a pull request
-
-## License
-
-This project is licensed under the MIT License. 
+- **v1.0.0**: Initial release with all core features
+- Updated API integration
+- Fixed authentication flow
+- Improved error handling
+- Enhanced user interface
+- Added comprehensive documentation 

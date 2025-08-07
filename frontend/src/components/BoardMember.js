@@ -7,7 +7,7 @@ const BoardMember = () => {
     <Container className="mt-4">
       <h2>Member Dashboard</h2>
       <p className="text-muted">Welcome to your member dashboard. Here you can manage your gym activities.</p>
-      
+
       <Row>
         <Col md={6}>
           <Card className="mb-4">
@@ -26,14 +26,14 @@ const BoardMember = () => {
                   <strong>Workouts This Month:</strong> 12
                 </ListGroup.Item>
                 <ListGroup.Item>
-                  <strong>Membership Status:</strong> 
+                  <strong>Membership Status:</strong>
                   <span className="badge bg-success ms-2">Active</span>
                 </ListGroup.Item>
               </ListGroup>
             </Card.Body>
           </Card>
         </Col>
-        
+
         <Col md={6}>
           <Card className="mb-4">
             <Card.Header>
@@ -55,18 +55,20 @@ const BoardMember = () => {
           </Card>
         </Col>
       </Row>
-      
+
       <Row>
         <Col md={4}>
           <Card className="text-center">
             <Card.Body>
               <h5>💪 Book Training</h5>
               <p>Schedule a session with our trainers</p>
-              <Button variant="primary" as={Link} to="/training-sessions">Book Session</Button>
+              <Button variant="primary" as={Link} to="/book-session">
+                Book Session
+              </Button>
             </Card.Body>
           </Card>
         </Col>
-        
+
         <Col md={4}>
           <Card className="text-center">
             <Card.Body>
@@ -76,7 +78,7 @@ const BoardMember = () => {
             </Card.Body>
           </Card>
         </Col>
-        
+
         <Col md={4}>
           <Card className="text-center">
             <Card.Body>

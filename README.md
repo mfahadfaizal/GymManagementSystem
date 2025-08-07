@@ -1,52 +1,111 @@
 # Gym Management System
 
-A full-stack gym management application with React frontend and Spring Boot backend.
+A comprehensive gym management system built with Spring Boot (Backend) and React (Frontend) with role-based access control and full CRUD operations.
 
-## 🏗️ Architecture
+## Features
 
-- **Frontend**: React.js with Bootstrap UI
-- **Backend**: Spring Boot with JWT authentication
-- **Database**: MySQL
-- **Authentication**: JWT-based with role-based access control
+### 🔐 Authentication & Authorization
+- JWT-based authentication
+- Role-based access control (ADMIN, STAFF, TRAINER, MEMBER)
+- Secure password encryption
+- Session management
 
-## 🚀 Quick Start
+### 👥 User Management
+- User registration and login
+- Profile management
+- Role-based dashboards
+- User CRUD operations
 
-### Prerequisites
+### 💳 Membership Management
+- Create and manage memberships
+- Track membership status (ACTIVE, EXPIRED, CANCELLED)
+- Membership renewal functionality
+- Expiring membership alerts
+
+### 🏋️ Equipment Management
+- Equipment inventory tracking
+- Maintenance scheduling
+- Status management (AVAILABLE, MAINTENANCE, OUT_OF_SERVICE)
+- Warranty tracking
+
+### 🎯 Training Sessions
+- Schedule training sessions
+- Trainer-member assignments
+- Session status tracking
+- Booking system for members
+
+### 🏃 Gym Classes
+- Class scheduling and management
+- Capacity management
+- Class registration system
+- Attendance tracking
+
+### 💰 Payment Management
+- Payment processing
+- Multiple payment methods
+- Payment status tracking
+- Revenue reporting
+
+## Technology Stack
+
+### Backend
+- **Spring Boot 3.x** - Main framework
+- **Spring Security** - Authentication & Authorization
+- **Spring Data JPA** - Database operations
+- **MySQL** - Database
+- **JWT** - Token-based authentication
+- **Maven** - Dependency management
+
+### Frontend
+- **React 18** - UI framework
+- **React Router** - Navigation
+- **Bootstrap 5** - UI components
+- **Axios** - HTTP client
+- **Context API** - State management
+
+## Prerequisites
 
 - Java 17 or higher
 - Node.js 16 or higher
 - MySQL 8.0 or higher
-- Maven
+- Maven 3.6 or higher
 
-### Database Setup
+## Installation & Setup
 
-1. Create a MySQL database:
+### 1. Database Setup
+
+1. Install MySQL if not already installed
+2. Create a new database:
 ```sql
 CREATE DATABASE gym_management;
 ```
 
-2. Update database credentials in `backend/src/main/resources/application.properties`:
+3. Update database configuration in `backend/src/main/resources/application.properties`:
 ```properties
 spring.datasource.username=your_username
 spring.datasource.password=your_password
 ```
 
-### Backend Setup
+### 2. Backend Setup
 
 1. Navigate to the backend directory:
 ```bash
 cd backend
 ```
 
-2. Build and run the Spring Boot application:
+2. Install dependencies:
 ```bash
 mvn clean install
+```
+
+3. Run the application:
+```bash
 mvn spring-boot:run
 ```
 
 The backend will start on `http://localhost:8080`
 
-### Frontend Setup
+### 3. Frontend Setup
 
 1. Navigate to the frontend directory:
 ```bash
@@ -65,166 +124,183 @@ npm start
 
 The frontend will start on `http://localhost:3000`
 
-## 🔧 Configuration
+## API Endpoints
 
-### Backend Configuration
-
-The backend is configured with:
-- **Port**: 8080
-- **CORS**: Enabled for all origins
-- **JWT**: Secret key configured in `application.properties`
-- **Database**: MySQL with automatic schema generation
-
-### Frontend Configuration
-
-The frontend is configured with:
-- **Proxy**: Configured to `http://localhost:8080` in `package.json`
-- **API Service**: Centralized API calls in `src/services/api.js`
-- **Authentication**: JWT token management in `src/context/AuthContext.js`
-
-## 🔐 Authentication & Authorization
-
-### User Roles
-
-- **ADMIN**: Full system access
-- **STAFF**: Management operations
-- **TRAINER**: Training session management
-- **MEMBER**: Basic member access
-
-### API Endpoints
-
-#### Authentication
+### Authentication
 - `POST /api/auth/signin` - User login
 - `POST /api/auth/signup` - User registration
 
-#### User Management
-- `GET /api/users` - Get all users (ADMIN, STAFF)
+### Users
+- `GET /api/users` - Get all users (ADMIN/STAFF)
 - `GET /api/users/{id}` - Get user by ID
 - `PUT /api/users/{id}` - Update user
 - `DELETE /api/users/{id}` - Delete user (ADMIN)
 
-#### Membership Management
+### Memberships
 - `GET /api/memberships` - Get all memberships
+- `GET /api/memberships/{id}` - Get membership by ID
+- `GET /api/memberships/user/{userId}` - Get user's memberships
 - `POST /api/memberships` - Create membership
 - `PUT /api/memberships/{id}` - Update membership
 - `DELETE /api/memberships/{id}` - Delete membership
 
-#### Equipment Management
+### Equipment
 - `GET /api/equipment` - Get all equipment
+- `GET /api/equipment/{id}` - Get equipment by ID
 - `POST /api/equipment` - Create equipment
 - `PUT /api/equipment/{id}` - Update equipment
 - `DELETE /api/equipment/{id}` - Delete equipment
 
-#### Gym Classes
+### Training Sessions
+- `GET /api/training-sessions` - Get all sessions
+- `POST /api/training-sessions/book` - Book session (MEMBER)
+- `POST /api/training-sessions` - Create session
+- `PUT /api/training-sessions/{id}` - Update session
+- `DELETE /api/training-sessions/{id}` - Delete session
+
+### Gym Classes
 - `GET /api/gym-classes` - Get all classes
 - `POST /api/gym-classes` - Create class
 - `PUT /api/gym-classes/{id}` - Update class
 - `DELETE /api/gym-classes/{id}` - Delete class
 
-#### Training Sessions
-- `GET /api/training-sessions` - Get all sessions
-- `POST /api/training-sessions` - Create session
-- `PUT /api/training-sessions/{id}` - Update session
-- `DELETE /api/training-sessions/{id}` - Delete session
-
-#### Class Registrations
+### Class Registrations
 - `GET /api/class-registrations` - Get all registrations
-- `POST /api/class-registrations` - Create registration
-- `PUT /api/class-registrations/{id}` - Update registration
-- `DELETE /api/class-registrations/{id}` - Delete registration
+- `POST /api/class-registrations/register` - Register for class
+- `PUT /api/class-registrations/{id}/status` - Update registration status
 
-#### Payments
+### Payments
 - `GET /api/payments` - Get all payments
 - `POST /api/payments` - Create payment
-- `PUT /api/payments/{id}` - Update payment
-- `DELETE /api/payments/{id}` - Delete payment
+- `PUT /api/payments/{id}/status` - Update payment status
 
-## 🎯 Features
+## Role-Based Access
 
-### Admin Features
+### ADMIN
+- Full system access
 - User management
-- Membership management
-- Equipment management
-- Gym class management
-- Payment management
-- Training session oversight
+- All CRUD operations
+- System configuration
 
-### Staff Features
+### STAFF
 - Membership management
 - Equipment management
-- Gym class management
 - Payment processing
+- Class management
 
-### Trainer Features
+### TRAINER
 - Training session management
-- Class registration management
+- Class teaching
+- Member progress tracking
+- Session scheduling
 
-### Member Features
-- View profile
-- Access member dashboard
+### MEMBER
+- View own profile
+- Book training sessions
+- Register for classes
+- View own memberships
 
-## 🔄 API Integration
+## Quick Start Scripts
 
-The frontend and backend are connected through:
+### Windows
+```bash
+# Start backend
+cd backend && mvn spring-boot:run
 
-1. **Proxy Configuration**: Frontend proxy points to backend
-2. **CORS Configuration**: Backend allows frontend requests
-3. **JWT Authentication**: Secure API communication
-4. **Centralized API Service**: Organized API calls
+# Start frontend (in new terminal)
+cd frontend && npm start
+```
 
-### Key Integration Points
+### Linux/Mac
+```bash
+# Start backend
+cd backend && ./mvnw spring-boot:run
 
-- **Authentication Flow**: Login → JWT Token → API Calls
-- **Error Handling**: 401 responses redirect to login
-- **Token Management**: Automatic token inclusion in requests
-- **Role-based Access**: Frontend routes protected by user roles
+# Start frontend (in new terminal)
+cd frontend && npm start
+```
 
-## 🛠️ Development
+## Default Users
+
+The system creates default users on startup:
+
+- **Admin**: admin/admin123
+- **Staff**: staff/staff123
+- **Trainer**: trainer/trainer123
+- **Member**: member/member123
+
+## Troubleshooting
+
+### Common Issues
+
+1. **Database Connection Error**
+   - Verify MySQL is running
+   - Check database credentials in `application.properties`
+   - Ensure database exists
+
+2. **Port Already in Use**
+   - Change backend port in `application.properties`
+   - Change frontend port in `package.json`
+
+3. **CORS Issues**
+   - Backend CORS is configured for all origins
+   - Check if backend is running on correct port
+
+4. **JWT Token Issues**
+   - Clear browser localStorage
+   - Re-login to get new token
+
+### Logs
+
+Backend logs are available in the console and can be configured in `application.properties`:
+```properties
+logging.level.com.gym=DEBUG
+```
+
+## Development
 
 ### Adding New Features
 
-1. **Backend**: Create entity, repository, service, controller
-2. **Frontend**: Create component, add to API service, update routes
-3. **Testing**: Test API endpoints and frontend integration
+1. **Backend**: Add entities, repositories, services, and controllers
+2. **Frontend**: Add components and API calls
+3. **Database**: Update schema if needed
 
-### File Structure
+### Code Structure
 
 ```
 ├── backend/
 │   ├── src/main/java/com/gym/
 │   │   ├── controller/     # REST controllers
 │   │   ├── entity/         # JPA entities
-│   │   ├── repository/     # Data access layer
+│   │   ├── repository/     # Data repositories
 │   │   ├── service/        # Business logic
-│   │   └── security/       # JWT and security config
+│   │   ├── security/       # JWT & security config
+│   │   └── payload/        # Request/Response DTOs
 │   └── src/main/resources/
 │       └── application.properties
 ├── frontend/
 │   ├── src/
 │   │   ├── components/     # React components
-│   │   ├── context/        # React context (AuthContext)
-│   │   ├── services/       # API service layer
-│   │   └── App.js          # Main app component
+│   │   ├── services/       # API services
+│   │   ├── context/        # React context
+│   │   └── App.js          # Main app
 │   └── package.json
-└── README.md
+└── database/
+    └── schema.sql          # Database schema
 ```
 
-## 🚨 Troubleshooting
+## Contributing
 
-### Common Issues
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Test thoroughly
+5. Submit a pull request
 
-1. **CORS Errors**: Ensure backend CORS is properly configured
-2. **Authentication Errors**: Check JWT token validity
-3. **Database Connection**: Verify MySQL credentials and database exists
-4. **Port Conflicts**: Ensure ports 3000 and 8080 are available
+## License
 
-### Debug Steps
+This project is licensed under the MIT License.
 
-1. Check browser console for frontend errors
-2. Check backend logs for server errors
-3. Verify API endpoints with Postman
-4. Check database connectivity
+## Support
 
-## 📝 License
-
-This project is licensed under the MIT License. 
+For support and questions, please create an issue in the repository. 

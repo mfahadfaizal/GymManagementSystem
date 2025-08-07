@@ -40,6 +40,33 @@ public class TrainingSessionController {
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
+
+    @PostMapping("/book")
+@PreAuthorize("hasRole('MEMBER')")
+public ResponseEntity<?> bookTrainingSession(@Valid @RequestBody TrainingSessionRequest request) {
+    Long currentMemberId = userService.getCurrentUserId();  // Get authenticated member ID
+
+    if (!currentMemberId.equals(request.getMemberId())) {
+        return ResponseEntity.badRequest().body(new MessageResponse("You can only book sessions for yourself"));
+    }
+
+    try {
+        TrainingSession session = trainingSessionService.createTrainingSession(
+            request.getTrainerId(),
+            currentMemberId,
+            request.getType(),
+            request.getScheduledDate(),
+            request.getDuration(),
+            request.getPrice(),
+            request.getNotes(),
+            request.getLocation()
+        );
+        return ResponseEntity.ok(session);
+    } catch (RuntimeException e) {
+        return ResponseEntity.badRequest().body(new MessageResponse(e.getMessage()));
+    }
+}
+
     
     @GetMapping("/trainer/{trainerId}")
     @PreAuthorize("hasRole('ADMIN') or hasRole('STAFF') or hasRole('TRAINER') or @userService.isCurrentUser(#trainerId)")
