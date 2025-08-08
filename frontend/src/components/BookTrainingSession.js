@@ -5,7 +5,7 @@ const BookTrainingSession = () => {
   const [trainers, setTrainers] = useState([]);
   const [form, setForm] = useState({
     trainerId: '',
-    memberId: 0, // Placeholder; backend uses authenticated user
+    memberId: 0,
     type: '',
     scheduledDate: '',
     duration: '',
@@ -14,11 +14,16 @@ const BookTrainingSession = () => {
     location: ''
   });
 
+  // Get token from localStorage (or wherever you store it)
+  const token = localStorage.getItem('token');
+
   useEffect(() => {
-    axios.get('/api/users/trainers')
+    axios.get('/api/users/trainers', {
+      headers: { Authorization: `Bearer ${token}` }
+    })
       .then(res => setTrainers(res.data))
       .catch(err => console.error('Error fetching trainers:', err));
-  }, []);
+  }, [token]);
 
   const handleChange = e =>
     setForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
@@ -26,7 +31,10 @@ const BookTrainingSession = () => {
   const handleSubmit = async e => {
     e.preventDefault();
     try {
-      await axios.post('/api/training-sessions/book', form);
+      // Add Authorization header here too
+      await axios.post('/api/training-sessions/book', form, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
       alert('Session booked successfully');
     } catch (err) {
       alert('Error: ' + (err.response?.data?.message || 'Booking failed'));

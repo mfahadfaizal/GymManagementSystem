@@ -42,6 +42,7 @@ public class Equipment {
     private LocalDateTime nextMaintenanceDate;
     
     @Column
+    @NotBlank(message = "Location must not be empty")
     private String location;
     
     @Column(name = "serial_number")
@@ -70,13 +71,23 @@ public class Equipment {
     // Constructors
     public Equipment() {}
     
-    public Equipment(String name, EquipmentType type, BigDecimal purchasePrice) {
-        this.name = name;
-        this.type = type;
-        this.purchasePrice = purchasePrice;
-        this.status = EquipmentStatus.AVAILABLE;
-        this.purchaseDate = LocalDateTime.now();
-    }
+    public Equipment(String name, String description, EquipmentType type, BigDecimal purchasePrice,
+                 LocalDateTime purchaseDate, LocalDateTime lastMaintenanceDate,
+                 LocalDateTime nextMaintenanceDate, String location, String serialNumber,
+                 LocalDateTime warrantyExpiry) {
+    this.name = name;
+    this.description = description;
+    this.type = type;
+    this.status = EquipmentStatus.AVAILABLE;
+    this.purchasePrice = purchasePrice;
+    this.purchaseDate = purchaseDate;
+    this.lastMaintenanceDate = lastMaintenanceDate;
+    this.nextMaintenanceDate = nextMaintenanceDate;
+    this.location = location;
+    this.serialNumber = serialNumber;
+    this.warrantyExpiry = warrantyExpiry;
+}
+
     
     // Getters and Setters
     public Long getId() {

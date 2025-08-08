@@ -40,7 +40,7 @@ public class EquipmentService {
     
     public Equipment createEquipment(String name, Equipment.EquipmentType type, BigDecimal purchasePrice,
                                   String description, String location, String serialNumber) {
-        Equipment equipment = new Equipment(name, type, purchasePrice);
+        Equipment equipment = new Equipment(name, serialNumber, type, purchasePrice, null, null, null, serialNumber, serialNumber, null);
         equipment.setDescription(description);
         equipment.setLocation(location);
         equipment.setSerialNumber(serialNumber);

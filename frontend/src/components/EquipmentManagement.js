@@ -11,7 +11,7 @@ const EquipmentManagement = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
-  const { isAuthenticated, user } = useAuth();
+  const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
@@ -32,7 +32,6 @@ const EquipmentManagement = () => {
       navigate('/login');
       return;
     }
-    
     fetchEquipment();
   }, [isAuthenticated, navigate]);
 
@@ -52,14 +51,33 @@ const EquipmentManagement = () => {
     }
   };
 
+  const formatDateTime = (date) => (date ? `${date}T00:00:00` : null);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Validate location is not blank
+    if (!formData.location.trim()) {
+      setError('Location is required');
+      return;
+    }
+
+    // Prepare payload matching backend entity expectations
+    const payload = {
+      ...formData,
+      purchasePrice: Number(formData.purchasePrice),
+      purchaseDate: formData.purchaseDate ? formatDateTime(formData.purchaseDate) : null,
+      lastMaintenanceDate: formData.lastMaintenanceDate ? formatDateTime(formData.lastMaintenanceDate) : null,
+      nextMaintenanceDate: formData.nextMaintenanceDate ? formatDateTime(formData.nextMaintenanceDate) : null,
+      warrantyExpiry: formData.warrantyExpiry ? formatDateTime(formData.warrantyExpiry) : null,
+    };
+
     try {
       if (editingEquipment) {
-        await equipmentAPI.update(editingEquipment.id, formData);
+        await equipmentAPI.update(editingEquipment.id, payload);
         setSuccess('Equipment updated successfully');
       } else {
-        await equipmentAPI.create(formData);
+        await equipmentAPI.create(payload);
         setSuccess('Equipment added successfully');
       }
       setShowModal(false);
@@ -78,7 +96,7 @@ const EquipmentManagement = () => {
       description: equipment.description || '',
       type: equipment.type,
       purchasePrice: equipment.purchasePrice,
-      purchaseDate: equipment.purchaseDate.split('T')[0],
+      purchaseDate: equipment.purchaseDate ? equipment.purchaseDate.split('T')[0] : '',
       lastMaintenanceDate: equipment.lastMaintenanceDate ? equipment.lastMaintenanceDate.split('T')[0] : '',
       nextMaintenanceDate: equipment.nextMaintenanceDate ? equipment.nextMaintenanceDate.split('T')[0] : '',
       location: equipment.location || '',
@@ -130,7 +148,8 @@ const EquipmentManagement = () => {
       AVAILABLE: 'success',
       IN_USE: 'primary',
       MAINTENANCE: 'warning',
-      OUT_OF_SERVICE: 'danger'
+      OUT_OF_ORDER: 'danger',
+      RETIRED: 'dark'
     };
     return <Badge bg={variants[status] || 'secondary'}>{status}</Badge>;
   };
@@ -140,7 +159,9 @@ const EquipmentManagement = () => {
       CARDIO: 'primary',
       STRENGTH: 'warning',
       FLEXIBILITY: 'info',
-      FUNCTIONAL: 'success'
+      WEIGHT_TRAINING: 'secondary',
+      FUNCTIONAL_TRAINING: 'success',
+      SPORTS_EQUIPMENT: 'dark'
     };
     return <Badge bg={variants[type] || 'secondary'}>{type}</Badge>;
   };
@@ -150,7 +171,7 @@ const EquipmentManagement = () => {
   }
 
   return (
-    <div className="container mt-4">
+    <Container className="mt-4">
       <Card>
         <Card.Header className="d-flex justify-content-between align-items-center">
           <h4>Equipment Management</h4>
@@ -161,7 +182,7 @@ const EquipmentManagement = () => {
         <Card.Body>
           {error && <Alert variant="danger" onClose={() => setError('')} dismissible>{error}</Alert>}
           {success && <Alert variant="success" onClose={() => setSuccess('')} dismissible>{success}</Alert>}
-          
+
           <Table striped bordered hover responsive>
             <thead>
               <tr>
@@ -192,12 +213,21 @@ const EquipmentManagement = () => {
                     <Button size="sm" variant="outline-danger" className="ms-2" onClick={() => handleDelete(item.id)}>
                       Delete
                     </Button>
-                    <div className="mt-1">
+                    <div className="mt-1 d-flex flex-wrap gap-1">
                       <Button size="sm" variant="outline-success" onClick={() => handleStatusUpdate(item.id, 'AVAILABLE')}>
                         Available
                       </Button>
-                      <Button size="sm" variant="outline-warning" className="ms-1" onClick={() => handleStatusUpdate(item.id, 'MAINTENANCE')}>
+                      <Button size="sm" variant="outline-primary" onClick={() => handleStatusUpdate(item.id, 'IN_USE')}>
+                        In Use
+                      </Button>
+                      <Button size="sm" variant="outline-warning" onClick={() => handleStatusUpdate(item.id, 'MAINTENANCE')}>
                         Maintenance
+                      </Button>
+                      <Button size="sm" variant="outline-danger" onClick={() => handleStatusUpdate(item.id, 'OUT_OF_ORDER')}>
+                        Out of Order
+                      </Button>
+                      <Button size="sm" variant="outline-dark" onClick={() => handleStatusUpdate(item.id, 'RETIRED')}>
+                        Retired
                       </Button>
                     </div>
                   </td>
@@ -221,7 +251,7 @@ const EquipmentManagement = () => {
                   <Form.Control
                     type="text"
                     value={formData.name}
-                    onChange={(e) => setFormData({...formData, name: e.target.value})}
+                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                     required
                   />
                 </Form.Group>
@@ -231,13 +261,15 @@ const EquipmentManagement = () => {
                   <Form.Label>Type</Form.Label>
                   <Form.Select
                     value={formData.type}
-                    onChange={(e) => setFormData({...formData, type: e.target.value})}
+                    onChange={(e) => setFormData({ ...formData, type: e.target.value })}
                     required
                   >
                     <option value="CARDIO">Cardio</option>
                     <option value="STRENGTH">Strength</option>
                     <option value="FLEXIBILITY">Flexibility</option>
-                    <option value="FUNCTIONAL">Functional</option>
+                    <option value="WEIGHT_TRAINING">Weight Training</option>
+                    <option value="FUNCTIONAL_TRAINING">Functional Training</option>
+                    <option value="SPORTS_EQUIPMENT">Sports Equipment</option>
                   </Form.Select>
                 </Form.Group>
               </div>
@@ -247,31 +279,43 @@ const EquipmentManagement = () => {
               <Form.Label>Description</Form.Label>
               <Form.Control
                 as="textarea"
-                rows={3}
+                rows={2}
                 value={formData.description}
-                onChange={(e) => setFormData({...formData, description: e.target.value})}
+                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
               />
             </Form.Group>
 
             <div className="row">
-              <div className="col-md-6">
+              <div className="col-md-4">
                 <Form.Group className="mb-3">
                   <Form.Label>Purchase Price</Form.Label>
                   <Form.Control
                     type="number"
+                    step="0.01"
+                    min="0"
                     value={formData.purchasePrice}
-                    onChange={(e) => setFormData({...formData, purchasePrice: e.target.value})}
+                    onChange={(e) => setFormData({ ...formData, purchasePrice: e.target.value })}
                     required
                   />
                 </Form.Group>
               </div>
-              <div className="col-md-6">
+              <div className="col-md-4">
                 <Form.Group className="mb-3">
                   <Form.Label>Purchase Date</Form.Label>
                   <Form.Control
                     type="date"
                     value={formData.purchaseDate}
-                    onChange={(e) => setFormData({...formData, purchaseDate: e.target.value})}
+                    onChange={(e) => setFormData({ ...formData, purchaseDate: e.target.value })}
+                  />
+                </Form.Group>
+              </div>
+              <div className="col-md-4">
+                <Form.Group className="mb-3">
+                  <Form.Label>Location</Form.Label>
+                  <Form.Control
+                    type="text"
+                    value={formData.location}
+                    onChange={(e) => setFormData({ ...formData, location: e.target.value })}
                     required
                   />
                 </Form.Group>
@@ -279,57 +323,44 @@ const EquipmentManagement = () => {
             </div>
 
             <div className="row">
-              <div className="col-md-6">
+              <div className="col-md-4">
                 <Form.Group className="mb-3">
                   <Form.Label>Last Maintenance Date</Form.Label>
                   <Form.Control
                     type="date"
                     value={formData.lastMaintenanceDate}
-                    onChange={(e) => setFormData({...formData, lastMaintenanceDate: e.target.value})}
+                    onChange={(e) => setFormData({ ...formData, lastMaintenanceDate: e.target.value })}
                   />
                 </Form.Group>
               </div>
-              <div className="col-md-6">
+              <div className="col-md-4">
                 <Form.Group className="mb-3">
                   <Form.Label>Next Maintenance Date</Form.Label>
                   <Form.Control
                     type="date"
                     value={formData.nextMaintenanceDate}
-                    onChange={(e) => setFormData({...formData, nextMaintenanceDate: e.target.value})}
+                    onChange={(e) => setFormData({ ...formData, nextMaintenanceDate: e.target.value })}
                   />
                 </Form.Group>
               </div>
-            </div>
-
-            <div className="row">
-              <div className="col-md-6">
+              <div className="col-md-4">
                 <Form.Group className="mb-3">
-                  <Form.Label>Location</Form.Label>
+                  <Form.Label>Warranty Expiry</Form.Label>
                   <Form.Control
-                    type="text"
-                    value={formData.location}
-                    onChange={(e) => setFormData({...formData, location: e.target.value})}
-                  />
-                </Form.Group>
-              </div>
-              <div className="col-md-6">
-                <Form.Group className="mb-3">
-                  <Form.Label>Serial Number</Form.Label>
-                  <Form.Control
-                    type="text"
-                    value={formData.serialNumber}
-                    onChange={(e) => setFormData({...formData, serialNumber: e.target.value})}
+                    type="date"
+                    value={formData.warrantyExpiry}
+                    onChange={(e) => setFormData({ ...formData, warrantyExpiry: e.target.value })}
                   />
                 </Form.Group>
               </div>
             </div>
 
             <Form.Group className="mb-3">
-              <Form.Label>Warranty Expiry Date</Form.Label>
+              <Form.Label>Serial Number</Form.Label>
               <Form.Control
-                type="date"
-                value={formData.warrantyExpiry}
-                onChange={(e) => setFormData({...formData, warrantyExpiry: e.target.value})}
+                type="text"
+                value={formData.serialNumber}
+                onChange={(e) => setFormData({ ...formData, serialNumber: e.target.value })}
               />
             </Form.Group>
           </Modal.Body>
@@ -338,13 +369,13 @@ const EquipmentManagement = () => {
               Cancel
             </Button>
             <Button variant="primary" type="submit">
-              {editingEquipment ? 'Update' : 'Create'}
+              {editingEquipment ? 'Update' : 'Add'}
             </Button>
           </Modal.Footer>
         </Form>
       </Modal>
-    </div>
+    </Container>
   );
 };
 
-export default EquipmentManagement; 
+export default EquipmentManagement;

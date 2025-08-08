@@ -57,7 +57,7 @@ public class UserService {
         user.setPassword(passwordEncoder.encode(password));
         user.setFirstName(firstName);
         user.setLastName(lastName);
-        user.setRole(role);
+        user.setRole(role != null ? role : User.Role.MEMBER);
         user.setEnabled(true);
         
         return userRepository.save(user);
@@ -152,4 +152,49 @@ public class UserService {
         Optional<User> user = userRepository.findById(userId);
         return user.isPresent() && user.get().getRole() == User.Role.MEMBER;
     }
-} 
+
+    // Fully implemented createUser method accepting a User object
+    public User createUser(User userRequest) {
+        if (userRequest == null) {
+            throw new IllegalArgumentException("User data must not be null");
+        }
+        
+        // Validate mandatory fields
+        if (userRequest.getUsername() == null || userRequest.getUsername().isBlank()) {
+            throw new RuntimeException("Username is required");
+        }
+        if (userRequest.getPassword() == null || userRequest.getPassword().isBlank()) {
+            throw new RuntimeException("Password is required");
+        }
+        if (userRequest.getEmail() == null || userRequest.getEmail().isBlank()) {
+            throw new RuntimeException("Email is required");
+        }
+        if (userRequest.getFirstName() == null || userRequest.getFirstName().isBlank()) {
+            throw new RuntimeException("First name is required");
+        }
+        if (userRequest.getLastName() == null || userRequest.getLastName().isBlank()) {
+            throw new RuntimeException("Last name is required");
+        }
+        
+        // Check for duplicates
+        if (userRepository.existsByUsername(userRequest.getUsername())) {
+            throw new RuntimeException("Username is already taken");
+        }
+        if (userRepository.existsByEmail(userRequest.getEmail())) {
+            throw new RuntimeException("Email is already in use");
+        }
+        
+        // Encode password
+        userRequest.setPassword(passwordEncoder.encode(userRequest.getPassword()));
+        
+        // Set enabled flag
+        userRequest.setEnabled(true);
+        
+        // Default role to MEMBER if null
+        if (userRequest.getRole() == null) {
+            userRequest.setRole(User.Role.MEMBER);
+        }
+        
+        return userRepository.save(userRequest);
+    }
+}

@@ -83,7 +83,7 @@ const Dashboard = () => {
 /** Landing page sections modularized **/
 
 const Header = () => (
-  <header className="header fixed-top bg-white shadow-sm py-2">
+  <header className="header fixed-top bg-dark shadow-sm py-2">
     <div className="container d-flex justify-content-between align-items-center">
       <a href="#" className="d-flex align-items-center text-decoration-none">
         <ion-icon
@@ -97,19 +97,19 @@ const Header = () => (
         />
         <span
           className="ms-2 fw-bold"
-          style={{ fontFamily: "'Catamaran', sans-serif", fontSize: "2.8rem", color: "#152947" }}
+          style={{ fontFamily: "'Catamaran', sans-serif", fontSize: "2.8rem", color: "#f44336" }}
         >
           Fitlife
         </span>
       </a>
 
-      <nav className="d-none d-lg-block">
+      <nav className="d-none d-lg-block ">
         <ul className="nav">
           {["Home", "About Us", "Classes", "Blog", "Contact Us"].map((text, idx) => (
             <li key={idx} className="nav-item">
               <a
                 href={`#${text.toLowerCase().replace(" ", "")}`}
-                className={`nav-link px-3 ${idx === 0 ? "active fw-bold" : ""}`}
+                className={`nav-link px-3  ${idx === 0 ? "active fw-bold" : ""}`}
               >
                 {text}
               </a>
