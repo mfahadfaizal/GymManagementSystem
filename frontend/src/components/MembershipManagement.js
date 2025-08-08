@@ -224,9 +224,9 @@ const MembershipManagement = () => {
   const handleEditMembership = (membership) => {
     setEditingMembership(membership);
     setMembershipFormData({
-      userId: membership.userId.toString(),
+      userId: membership.userId,
       type: membership.type,
-      price: membership.price.toString(),
+      price: membership.price,
       startDate: membership.startDate.split('T')[0],
       endDate: membership.endDate.split('T')[0],
       description: membership.description || '',
@@ -389,7 +389,7 @@ const MembershipManagement = () => {
                   </thead>
                   <tbody>
                     {memberships.map((m) => {
-                      const membershipUser = users.find((u) => u.id === m.userId);
+                      const membershipUser = m.user;
                       return (
                         <tr key={m.id}>
                           <td>
