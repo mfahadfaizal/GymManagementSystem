@@ -101,7 +101,7 @@ function App() {
               </PrivateRoute>
             } />
             <Route path="/gym-classes" element={
-              <PrivateRoute roles={['ADMIN', 'STAFF']}>
+              <PrivateRoute roles={['ADMIN', 'STAFF', 'MEMBER']}>
                 <GymClassManagement />
               </PrivateRoute>
             } />

@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 @Entity
 @Table(name = "class_registrations")
 public class ClassRegistration {
@@ -14,10 +16,13 @@ public class ClassRegistration {
     
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id", nullable = false)
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private User member;
     
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "class_id", nullable = false)
+
+@ManyToOne(fetch = FetchType.LAZY)
+@JoinColumn(name = "class_id", nullable = false)
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private GymClass gymClass;
     
     @Enumerated(EnumType.STRING)

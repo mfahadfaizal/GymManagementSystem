@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Card, Button, Modal, Form, Alert, Badge, Table } from 'react-bootstrap';
-import { classRegistrationAPI, gymClassAPI, userAPI } from '../services/api';
+import { classRegistrationAPI, gymClassAPI, membershipAPI } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
@@ -60,34 +60,42 @@ const ClassRegistrationManagement = () => {
 
   const fetchMembers = async () => {
     try {
-      const response = await userAPI.getAll();
-      setMembers(response.data.filter(user => user.role === 'MEMBER'));
+      const response = await membershipAPI.getAll();
+      const memberships = response.data;
+
+      // Extract unique users with active or valid memberships
+      const seen = new Set();
+      const uniqueMembers = [];
+
+      memberships.forEach(m => {
+        const user = m.user;
+        if (user && !seen.has(user.id)) {
+          seen.add(user.id);
+          uniqueMembers.push(user);
+        }
+      });
+
+      setMembers(uniqueMembers);
     } catch (err) {
-      console.error('Failed to fetch members');
+      console.error('Failed to fetch members from memberships');
     }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      if (editingRegistration) {
-        await classRegistrationAPI.update(editingRegistration.id, formData);
-        setSuccess('Registration updated successfully');
-      } else {
-        await classRegistrationAPI.create(formData);
-        setSuccess('Registration created successfully');
-      }
+      await classRegistrationAPI.registerForClass(formData.memberId, formData.gymClassId);
+      setSuccess('Registration created successfully');
       setShowModal(false);
       setEditingRegistration(null);
       resetForm();
       fetchRegistrations();
-      fetchClasses();
     } catch (err) {
       if (err.response?.status === 401) {
         setError('Authentication required. Please login again.');
         navigate('/login');
       } else {
-        setError(err.response?.data?.message || 'Operation failed');
+        setError(err.response?.data?.message || 'Registration failed');
       }
     }
   };
@@ -207,12 +215,10 @@ const ClassRegistrationManagement = () => {
                           <Button size="sm" variant="outline-danger" className="ms-1" onClick={() => handleStatusUpdate(registration.id, 'NO_SHOW')}>
                             No Show
                           </Button>
+                          <Button size="sm" variant="outline-warning" className="ms-1" onClick={() => handleStatusUpdate(registration.id, 'CANCELLED')}>
+                            Cancel
+                          </Button>
                         </>
-                      )}
-                      {registration.status === 'REGISTERED' && (
-                        <Button size="sm" variant="outline-warning" className="ms-1" onClick={() => handleStatusUpdate(registration.id, 'CANCELLED')}>
-                          Cancel
-                        </Button>
                       )}
                     </div>
                   </td>
@@ -222,6 +228,7 @@ const ClassRegistrationManagement = () => {
           </Table>
         </Card.Body>
       </Card>
+
 
       <Modal show={showModal} onHide={() => { setShowModal(false); setEditingRegistration(null); resetForm(); }}>
         <Modal.Header closeButton>

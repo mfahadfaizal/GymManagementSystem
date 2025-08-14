@@ -89,6 +89,18 @@ public class ClassRegistrationController {
             return ResponseEntity.badRequest().body(new MessageResponse(e.getMessage()));
         }
     }
+
+    @PostMapping
+@PreAuthorize("hasRole('ADMIN') or hasRole('STAFF')")
+public ResponseEntity<?> createRegistration(@RequestBody ClassRegistration registration) {
+    try {
+        ClassRegistration saved = classRegistrationService.save(registration);
+        return ResponseEntity.ok(saved);
+    } catch (Exception e) {
+        return ResponseEntity.badRequest().body(new MessageResponse("Failed to create registration"));
+    }
+}
+
     
     @PutMapping("/{id}/status")
     @PreAuthorize("hasRole('ADMIN') or hasRole('STAFF') or hasRole('TRAINER')")
@@ -116,7 +128,7 @@ public class ClassRegistrationController {
     }
     
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('STAFF') or hasRole('TRAINER')")
     public ResponseEntity<?> deleteRegistration(@PathVariable Long id) {
         try {
             classRegistrationService.deleteRegistration(id);

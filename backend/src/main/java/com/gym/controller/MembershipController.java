@@ -2,6 +2,7 @@ package com.gym.controller;
 
 import com.gym.entity.Membership;
 import com.gym.payload.request.MembershipRequest;
+import com.gym.payload.response.MembershipResponse;
 import com.gym.payload.response.MessageResponse;
 import com.gym.service.MembershipService;
 import com.gym.service.UserService;
@@ -27,11 +28,15 @@ public class MembershipController {
     private UserService userService;
     
     @GetMapping
-    @PreAuthorize("hasRole('ADMIN') or hasRole('STAFF')")
-    public ResponseEntity<List<Membership>> getAllMemberships() {
+    @PreAuthorize("hasRole('ADMIN') or hasRole('STAFF') or hasRole('TRAINER')")
+    public ResponseEntity<List<MembershipResponse>> getAllMemberships() {
         List<Membership> memberships = membershipService.getAllMemberships();
-        return ResponseEntity.ok(memberships);
+        List<MembershipResponse> response = memberships.stream()
+            .map(MembershipResponse::new)
+            .toList();
+        return ResponseEntity.ok(response);
     }
+
     
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN') or hasRole('STAFF') or @userService.isCurrentUser(#id)")

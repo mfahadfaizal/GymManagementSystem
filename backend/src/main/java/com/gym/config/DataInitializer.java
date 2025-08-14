@@ -121,26 +121,26 @@ public class DataInitializer implements CommandLineRunner {
 
     private void createSampleEquipment() {
         // Cardio equipment
-        Equipment treadmill = new Equipment("Treadmill", Equipment.EquipmentType.CARDIO, new BigDecimal("2500.00"));
+        Equipment treadmill = new Equipment("Treadmill", null, Equipment.EquipmentType.CARDIO, new BigDecimal("2500.00"), null, null, null, null, null, null);
         treadmill.setDescription("Professional treadmill for cardio workouts");
         treadmill.setLocation("Cardio Area");
         treadmill.setSerialNumber("TREAD-001");
         equipmentRepository.save(treadmill);
 
-        Equipment bike = new Equipment("Stationary Bike", Equipment.EquipmentType.CARDIO, new BigDecimal("1200.00"));
+        Equipment bike = new Equipment("Stationary Bike", null, Equipment.EquipmentType.CARDIO, new BigDecimal("1200.00"), null, null, null, null, null, null);
         bike.setDescription("Stationary bike for cycling workouts");
         bike.setLocation("Cardio Area");
         bike.setSerialNumber("BIKE-001");
         equipmentRepository.save(bike);
 
         // Strength equipment
-        Equipment bench = new Equipment("Weight Bench", Equipment.EquipmentType.STRENGTH, new BigDecimal("800.00"));
+        Equipment bench = new Equipment("Weight Bench", null, Equipment.EquipmentType.STRENGTH, new BigDecimal("800.00"), null, null, null, null, null, null);
         bench.setDescription("Adjustable weight bench for strength training");
         bench.setLocation("Strength Area");
         bench.setSerialNumber("BENCH-001");
         equipmentRepository.save(bench);
 
-        Equipment rack = new Equipment("Power Rack", Equipment.EquipmentType.STRENGTH, new BigDecimal("1500.00"));
+        Equipment rack = new Equipment("Power Rack", null, Equipment.EquipmentType.STRENGTH, new BigDecimal("1500.00"), null, null, null, null, null, null);
         rack.setDescription("Power rack for squats and other compound movements");
         rack.setLocation("Strength Area");
         rack.setSerialNumber("RACK-001");

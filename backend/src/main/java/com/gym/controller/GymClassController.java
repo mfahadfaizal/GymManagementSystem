@@ -27,7 +27,7 @@ public class GymClassController {
     private UserService userService;
     
     @GetMapping
-    @PreAuthorize("hasRole('ADMIN') or hasRole('STAFF') or hasRole('TRAINER')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('STAFF') or hasRole('TRAINER') or hasRole('MEMBER')")
     public ResponseEntity<List<GymClass>> getAllGymClasses() {
         List<GymClass> classes = gymClassService.getAllGymClasses();
         return ResponseEntity.ok(classes);
@@ -172,7 +172,7 @@ public class GymClassController {
     }
     
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('STAFF') or hasRole('TRAINER') or hasRole('MEMBER')")
     public ResponseEntity<?> deleteGymClass(@PathVariable Long id) {
         try {
             gymClassService.deleteGymClass(id);

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Card, Button, Modal, Form, Alert, Badge, Table } from 'react-bootstrap';
-import { trainingSessionAPI, userAPI } from '../services/api';
+import { Card, Button, Modal, Form, Alert, Badge, Table } from 'react-bootstrap';
+import { trainingSessionAPI, userAPI, membershipAPI } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
@@ -32,14 +32,18 @@ const TrainingSessionManagement = () => {
       navigate('/login');
       return;
     }
-    
+
     fetchSessions();
     fetchUsers();
-  }, [isAuthenticated, navigate]);
+  }, [isAuthenticated]);
 
   const fetchSessions = async () => {
+    setLoading(true);
     try {
-      const response = await trainingSessionAPI.getAll();
+      const response =
+        user.role === 'TRAINER'
+          ? await trainingSessionAPI.getByTrainer(user.id)
+          : await trainingSessionAPI.getAll();
       setSessions(response.data);
     } catch (err) {
       if (err.response?.status === 401) {
@@ -55,11 +59,32 @@ const TrainingSessionManagement = () => {
 
   const fetchUsers = async () => {
     try {
-      const response = await userAPI.getAll();
-      setTrainers(response.data.filter(user => user.role === 'TRAINER'));
-      setMembers(response.data.filter(user => user.role === 'MEMBER'));
+      if (user.role === 'TRAINER') {
+        const response = await membershipAPI.getAll();
+        const memberships = response.data;
+
+        const uniqueMembers = [];
+        const memberMap = new Map();
+
+        memberships.forEach(m => {
+          const member = m.user || m.member;
+          if (member && !memberMap.has(member.id)) {
+            memberMap.set(member.id, member);
+            uniqueMembers.push(member);
+          }
+        });
+
+        setMembers(uniqueMembers);
+        setTrainers([user]);
+      } else {
+        const response = await userAPI.getAll();
+        const users = response.data;
+        setTrainers(users.filter(u => u.role === 'TRAINER'));
+        setMembers(users.filter(u => u.role === 'MEMBER'));
+      }
     } catch (err) {
-      console.error('Failed to fetch users');
+      console.error('Failed to fetch users or memberships', err);
+      setError('Failed to load users or memberships');
     }
   };
 
@@ -68,32 +93,44 @@ const TrainingSessionManagement = () => {
     try {
       const sessionData = {
         ...formData,
-        scheduledDate: new Date(formData.scheduledDate).toISOString()
+        trainerId: Number(formData.trainerId),
+        memberId: Number(formData.memberId),
+        scheduledDate: new Date(formData.scheduledDate).toISOString(),
+        duration: Number(formData.duration),
+        price: Number(formData.price),
+        status: 'SCHEDULED'
       };
 
       if (editingSession) {
         await trainingSessionAPI.update(editingSession.id, sessionData);
         setSuccess('Training session updated successfully');
       } else {
-        await trainingSessionAPI.create(sessionData);
+        await trainingSessionAPI.createAsStaff(sessionData);
         setSuccess('Training session created successfully');
       }
+
       setShowModal(false);
       setEditingSession(null);
       resetForm();
       fetchSessions();
     } catch (err) {
+      console.error('Failed to submit session:', err);
       setError(err.response?.data?.message || 'Operation failed');
     }
   };
 
   const handleEdit = (session) => {
+    if (user.role === 'TRAINER' && session.trainer.id !== user.id) {
+      setError('You can only edit your own sessions');
+      return;
+    }
+
     setEditingSession(session);
     setFormData({
-      trainerId: session.trainer.id,
-      memberId: session.member.id,
+      trainerId: String(session.trainer.id),
+      memberId: String(session.member.id),
       type: session.type,
-      scheduledDate: session.scheduledDate.split('T')[0],
+      scheduledDate: session.scheduledDate.slice(0, 16),
       duration: session.duration,
       price: session.price,
       notes: session.notes || '',
@@ -102,7 +139,12 @@ const TrainingSessionManagement = () => {
     setShowModal(true);
   };
 
-  const handleDelete = async (id) => {
+  const handleDelete = async (id, trainerId) => {
+    if (user.role === 'TRAINER' && trainerId !== user.id) {
+      setError('You can only delete your own sessions');
+      return;
+    }
+
     if (window.confirm('Are you sure you want to delete this training session?')) {
       try {
         await trainingSessionAPI.delete(id);
@@ -126,7 +168,7 @@ const TrainingSessionManagement = () => {
 
   const resetForm = () => {
     setFormData({
-      trainerId: '',
+      trainerId: user.role === 'TRAINER' ? String(user.id) : '',
       memberId: '',
       type: 'PERSONAL_TRAINING',
       scheduledDate: '',
@@ -150,31 +192,30 @@ const TrainingSessionManagement = () => {
 
   const getTypeBadge = (type) => {
     const variants = {
-      PERSONAL: 'primary',
-      GROUP: 'success',
+      PERSONAL_TRAINING: 'primary',
+      GROUP_TRAINING: 'success',
       ASSESSMENT: 'warning',
-      NUTRITION: 'info'
+      CONSULTATION: 'info',
+      NUTRITION_COUNSELING: 'secondary'
     };
-    return <Badge bg={variants[type] || 'secondary'}>{type}</Badge>;
+    return <Badge bg={variants[type] || 'secondary'}>{type.replace(/_/g, ' ')}</Badge>;
   };
 
-  if (loading) {
-    return <div className="text-center">Loading...</div>;
-  }
+  if (loading) return <div className="text-center">Loading...</div>;
 
   return (
     <div className="container mt-4">
       <Card>
         <Card.Header className="d-flex justify-content-between align-items-center">
           <h4>Training Session Management</h4>
-          <Button variant="primary" onClick={() => setShowModal(true)}>
+          <Button variant="primary" onClick={() => { resetForm(); setShowModal(true); }}>
             Schedule New Session
           </Button>
         </Card.Header>
         <Card.Body>
-          {error && <Alert variant="danger" onClose={() => setError('')} dismissible>{error}</Alert>}
-          {success && <Alert variant="success" onClose={() => setSuccess('')} dismissible>{success}</Alert>}
-          
+          {error && <Alert variant="danger" dismissible onClose={() => setError('')}>{error}</Alert>}
+          {success && <Alert variant="success" dismissible onClose={() => setSuccess('')}>{success}</Alert>}
+
           <Table striped bordered hover responsive>
             <thead>
               <tr>
@@ -197,31 +238,25 @@ const TrainingSessionManagement = () => {
                   <td>{getTypeBadge(session.type)}</td>
                   <td>{getStatusBadge(session.status)}</td>
                   <td>{new Date(session.scheduledDate).toLocaleString()}</td>
-                  <td>{session.duration} minutes</td>
+                  <td>{session.duration} mins</td>
                   <td>${session.price}</td>
                   <td>{session.location || 'N/A'}</td>
                   <td>
-                    <Button size="sm" variant="outline-primary" onClick={() => handleEdit(session)}>
-                      Edit
-                    </Button>
-                    <Button size="sm" variant="outline-danger" className="ms-2" onClick={() => handleDelete(session.id)}>
-                      Delete
-                    </Button>
+                    {(user.role !== 'TRAINER' || session.trainer.id === user.id) && (
+                      <>
+                        <Button size="sm" variant="outline-primary" onClick={() => handleEdit(session)}>Edit</Button>
+                        <Button size="sm" variant="outline-danger" className="ms-2" onClick={() => handleDelete(session.id, session.trainer.id)}>Delete</Button>
+                      </>
+                    )}
                     <div className="mt-1">
                       {session.status === 'SCHEDULED' && (
                         <>
-                          <Button size="sm" variant="outline-warning" onClick={() => handleStatusUpdate(session.id, 'IN_PROGRESS')}>
-                            Start
-                          </Button>
-                          <Button size="sm" variant="outline-danger" className="ms-1" onClick={() => handleStatusUpdate(session.id, 'CANCELLED')}>
-                            Cancel
-                          </Button>
+                          <Button size="sm" variant="outline-warning" onClick={() => handleStatusUpdate(session.id, 'IN_PROGRESS')}>Start</Button>
+                          <Button size="sm" variant="outline-danger" className="ms-1" onClick={() => handleStatusUpdate(session.id, 'CANCELLED')}>Cancel</Button>
                         </>
                       )}
                       {session.status === 'IN_PROGRESS' && (
-                        <Button size="sm" variant="outline-success" onClick={() => handleStatusUpdate(session.id, 'COMPLETED')}>
-                          Complete
-                        </Button>
+                        <Button size="sm" variant="outline-success" onClick={() => handleStatusUpdate(session.id, 'COMPLETED')}>Complete</Button>
                       )}
                     </div>
                   </td>
@@ -232,6 +267,7 @@ const TrainingSessionManagement = () => {
         </Card.Body>
       </Card>
 
+      {/* Modal */}
       <Modal show={showModal} onHide={() => { setShowModal(false); setEditingSession(null); resetForm(); }} size="lg">
         <Modal.Header closeButton>
           <Modal.Title>{editingSession ? 'Edit Training Session' : 'Schedule New Training Session'}</Modal.Title>
@@ -239,34 +275,36 @@ const TrainingSessionManagement = () => {
         <Form onSubmit={handleSubmit}>
           <Modal.Body>
             <div className="row">
-              <div className="col-md-6">
-                <Form.Group className="mb-3">
-                  <Form.Label>Trainer</Form.Label>
-                  <Form.Select
-                    value={formData.trainerId}
-                    onChange={(e) => setFormData({...formData, trainerId: e.target.value})}
-                    required
-                  >
-                    <option value="">Select Trainer</option>
-                    {trainers.map(trainer => (
-                      <option key={trainer.id} value={trainer.id}>
-                        {trainer.firstName} {trainer.lastName} ({trainer.username})
-                      </option>
-                    ))}
-                  </Form.Select>
-                </Form.Group>
-              </div>
-              <div className="col-md-6">
-                <Form.Group className="mb-3">
+              {user.role !== 'TRAINER' && (
+                <div className="col-md-6">
+                  <Form.Group className="mb-3" controlId="trainerSelect">
+                    <Form.Label>Trainer</Form.Label>
+                    <Form.Select
+                      value={formData.trainerId}
+                      onChange={(e) => setFormData({ ...formData, trainerId: e.target.value })}
+                      required
+                    >
+                      <option value="">Select Trainer</option>
+                      {trainers.map((trainer) => (
+                        <option key={trainer.id} value={String(trainer.id)}>
+                          {trainer.firstName} {trainer.lastName} ({trainer.username})
+                        </option>
+                      ))}
+                    </Form.Select>
+                  </Form.Group>
+                </div>
+              )}
+              <div className={`col-md-${user.role === 'TRAINER' ? 12 : 6}`}>
+                <Form.Group className="mb-3" controlId="memberSelect">
                   <Form.Label>Member</Form.Label>
                   <Form.Select
                     value={formData.memberId}
-                    onChange={(e) => setFormData({...formData, memberId: e.target.value})}
+                    onChange={(e) => setFormData({ ...formData, memberId: e.target.value })}
                     required
                   >
                     <option value="">Select Member</option>
-                    {members.map(member => (
-                      <option key={member.id} value={member.id}>
+                    {members.map((member) => (
+                      <option key={member.id} value={String(member.id)}>
                         {member.firstName} {member.lastName} ({member.username})
                       </option>
                     ))}
@@ -277,27 +315,28 @@ const TrainingSessionManagement = () => {
 
             <div className="row">
               <div className="col-md-6">
-                <Form.Group className="mb-3">
+                <Form.Group className="mb-3" controlId="sessionType">
                   <Form.Label>Session Type</Form.Label>
                   <Form.Select
                     value={formData.type}
-                    onChange={(e) => setFormData({...formData, type: e.target.value})}
+                    onChange={(e) => setFormData({ ...formData, type: e.target.value })}
                     required
                   >
-                    <option value="PERSONAL">Personal Training</option>
-                    <option value="GROUP">Group Training</option>
+                    <option value="PERSONAL_TRAINING">Personal Training</option>
+                    <option value="GROUP_TRAINING">Group Training</option>
                     <option value="ASSESSMENT">Assessment</option>
-                    <option value="NUTRITION">Nutrition Consultation</option>
+                    <option value="CONSULTATION">Consultation</option>
+                    <option value="NUTRITION_COUNSELING">Nutrition Counseling</option>
                   </Form.Select>
                 </Form.Group>
               </div>
               <div className="col-md-6">
-                <Form.Group className="mb-3">
+                <Form.Group className="mb-3" controlId="scheduledDate">
                   <Form.Label>Scheduled Date & Time</Form.Label>
                   <Form.Control
                     type="datetime-local"
                     value={formData.scheduledDate}
-                    onChange={(e) => setFormData({...formData, scheduledDate: e.target.value})}
+                    onChange={(e) => setFormData({ ...formData, scheduledDate: e.target.value })}
                     required
                   />
                 </Form.Group>
@@ -306,49 +345,48 @@ const TrainingSessionManagement = () => {
 
             <div className="row">
               <div className="col-md-6">
-                <Form.Group className="mb-3">
+                <Form.Group className="mb-3" controlId="duration">
                   <Form.Label>Duration (minutes)</Form.Label>
                   <Form.Control
                     type="number"
+                    min={1}
                     value={formData.duration}
-                    onChange={(e) => setFormData({...formData, duration: e.target.value})}
+                    onChange={(e) => setFormData({ ...formData, duration: e.target.value })}
                     required
                   />
                 </Form.Group>
               </div>
               <div className="col-md-6">
-                <Form.Group className="mb-3">
+                <Form.Group className="mb-3" controlId="price">
                   <Form.Label>Price</Form.Label>
                   <Form.Control
                     type="number"
+                    min={0}
+                    step="0.01"
                     value={formData.price}
-                    onChange={(e) => setFormData({...formData, price: e.target.value})}
+                    onChange={(e) => setFormData({ ...formData, price: e.target.value })}
                     required
                   />
                 </Form.Group>
               </div>
             </div>
 
-            <div className="row">
-              <div className="col-md-6">
-                <Form.Group className="mb-3">
-                  <Form.Label>Location</Form.Label>
-                  <Form.Control
-                    type="text"
-                    value={formData.location}
-                    onChange={(e) => setFormData({...formData, location: e.target.value})}
-                  />
-                </Form.Group>
-              </div>
-            </div>
+            <Form.Group className="mb-3" controlId="location">
+              <Form.Label>Location</Form.Label>
+              <Form.Control
+                type="text"
+                value={formData.location}
+                onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+              />
+            </Form.Group>
 
-            <Form.Group className="mb-3">
+            <Form.Group className="mb-3" controlId="notes">
               <Form.Label>Notes</Form.Label>
               <Form.Control
                 as="textarea"
                 rows={3}
                 value={formData.notes}
-                onChange={(e) => setFormData({...formData, notes: e.target.value})}
+                onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
               />
             </Form.Group>
           </Modal.Body>
@@ -366,4 +404,4 @@ const TrainingSessionManagement = () => {
   );
 };
 
-export default TrainingSessionManagement; 
+export default TrainingSessionManagement;

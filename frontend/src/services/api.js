@@ -120,31 +120,41 @@ export const gymClassAPI = {
 
 // --- Training Session API ---
 export const trainingSessionAPI = {
+  // General
   getAll: () => api.get('/api/training-sessions'),
   getById: (id) => api.get(`/api/training-sessions/${id}`),
+
+  // By Trainer
   getByTrainer: (trainerId) => api.get(`/api/training-sessions/trainer/${trainerId}`),
+  getUpcomingByTrainer: (trainerId) => api.get(`/api/training-sessions/trainer/${trainerId}/upcoming`),
+  getByTrainerAndDateRange: (trainerId, startDate, endDate) =>
+    api.get(`/api/training-sessions/trainer/${trainerId}/date-range?startDate=${startDate}&endDate=${endDate}`),
+  getCompletedByTrainer: (trainerId) => api.get(`/api/training-sessions/stats/trainer/${trainerId}/completed`),
+
+  // By Member
   getByMember: (memberId) => api.get(`/api/training-sessions/member/${memberId}`),
+  getUpcomingByMember: (memberId) => api.get(`/api/training-sessions/member/${memberId}/upcoming`),
+  getByMemberAndDateRange: (memberId, startDate, endDate) =>
+    api.get(`/api/training-sessions/member/${memberId}/date-range?startDate=${startDate}&endDate=${endDate}`),
+  getCompletedByMember: (memberId) => api.get(`/api/training-sessions/stats/member/${memberId}/completed`),
+
+  // Filters
   getByStatus: (status) => api.get(`/api/training-sessions/status/${status}`),
   getByType: (type) => api.get(`/api/training-sessions/type/${type}`),
-  getUpcoming: () => api.get('/api/training-sessions/upcoming'),
-  getUpcomingByTrainer: (trainerId) => api.get(`/api/training-sessions/trainer/${trainerId}/upcoming`),
-  getUpcomingByMember: (memberId) => api.get(`/api/training-sessions/member/${memberId}/upcoming`),
-  getByDateRange: (startDate, endDate) => 
+  getByDateRange: (startDate, endDate) =>
     api.get(`/api/training-sessions/date-range?startDate=${startDate}&endDate=${endDate}`),
-  getByTrainerAndDateRange: (trainerId, startDate, endDate) => 
-    api.get(`/api/training-sessions/trainer/${trainerId}/date-range?startDate=${startDate}&endDate=${endDate}`),
-  getByMemberAndDateRange: (memberId, startDate, endDate) => 
-    api.get(`/api/training-sessions/member/${memberId}/date-range?startDate=${startDate}&endDate=${endDate}`),
-  getCompletedByTrainer: (trainerId) => api.get(`/api/training-sessions/stats/trainer/${trainerId}/completed`),
-  getCompletedByMember: (memberId) => api.get(`/api/training-sessions/stats/member/${memberId}/completed`),
-  bookSession: (data) => api.post('/api/training-sessions/book', data),
-  create: (data) => api.post('/api/training-sessions', data),
+  getUpcoming: () => api.get('/api/training-sessions/upcoming'),
+
+  // Session Actions
+  bookAsMember: (data) => api.post('/api/training-sessions/book', data),           // Member-only
+  createAsStaff: (data) => api.post('/api/training-sessions', data),              // Admin/Staff/Trainer
   update: (id, data) => api.put(`/api/training-sessions/${id}`, data),
   delete: (id) => api.delete(`/api/training-sessions/${id}`),
   updateStatus: (id, status) => api.put(`/api/training-sessions/${id}/status?status=${status}`),
-  reschedule: (id, newScheduledDate) => 
+  reschedule: (id, newScheduledDate) =>
     api.put(`/api/training-sessions/${id}/reschedule?newScheduledDate=${newScheduledDate}`),
 };
+
 
 // --- Class Registration API ---
 export const classRegistrationAPI = {

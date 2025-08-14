@@ -5,6 +5,8 @@ import jakarta.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 @Entity
 @Table(name = "memberships")
 public class Membership {
@@ -15,6 +17,7 @@ public class Membership {
     
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
+    @JsonIgnoreProperties({"password", "email", "roles", "enabled", "createdAt", "updatedAt"})
     private User user;
     
     @Enumerated(EnumType.STRING)

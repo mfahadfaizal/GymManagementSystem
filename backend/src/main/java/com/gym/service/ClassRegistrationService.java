@@ -189,4 +189,9 @@ public class ClassRegistrationService {
     public ClassRegistration markNoShow(Long id) {
         return updateRegistrationStatus(id, ClassRegistration.RegistrationStatus.NO_SHOW);
     }
+
+    public ClassRegistration save(ClassRegistration registration) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'save'");
+    }
 } 
