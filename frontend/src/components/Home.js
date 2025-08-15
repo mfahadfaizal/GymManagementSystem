@@ -1,4 +1,5 @@
 import React from "react";
+import { useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { Container, Button, Card, Row, Col } from "react-bootstrap";
@@ -7,12 +8,34 @@ import { Container, Button, Card, Row, Col } from "react-bootstrap";
 const Dashboard = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
-
   return (
-    <Container className="my-5">
-      <h2 className="mb-4">Dashboard</h2>
+    <div
+    style={{
+      minHeight: '100vh',
+      backgroundImage: `url('/assets/images/4.jpg')`,  // Path to your gym.jpg in public/assets/images/
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
+      backgroundRepeat: 'no-repeat',
+      padding: '1rem'
+    }}
+  >
+    <div className="my-5">
+    <Container >
+      <h2 className="mb-3" 
+          style={{color: 'white', 
+          backgroundColor: '#007bff', 
+          display: 'inline-block', 
+          padding: '15px 30px', 
+          borderRadius: '15px',
+          textShadow: '2px 2px 4px rgba(255, 0, 0, 0.5)'}}>Dashboard</h2>
       <Row>
-        <Col md={3}>
+        <div style={{ 
+        display: 'flex',
+        justifyContent: 'center',
+        padding: '10px',
+        gap: '30px'
+      }}>
+        <Col md={4} >
           <Card className="dashboard-card h-100">
             <Card.Body className="text-center">
               <h5>Profile</h5>
@@ -24,7 +47,7 @@ const Dashboard = () => {
           </Card>
         </Col>
         {user?.role === "MEMBER" && (
-          <Col md={3}>
+          <Col md={4}>
             <Card className="dashboard-card h-100">
               <Card.Body className="text-center">
                 <h5>Member Dashboard</h5>
@@ -75,14 +98,21 @@ const Dashboard = () => {
             </Card>
           </Col>
         )}
+        </div>
       </Row>
     </Container>
+    </div>
+    </div>
   );
 };
 
 /** Landing page sections modularized **/
 
-const Header = () => (
+const Header = () => {
+  const [hoveredIndex, setHoveredIndex] = useState(null);
+
+  const navItems = ["Home", "About Us", "Classes", "Blog", "Contact Us"];
+  return(
   <header className="header fixed-top bg-dark shadow-sm py-2">
     <div className="container d-flex justify-content-between align-items-center">
       <a href="#" className="d-flex align-items-center text-decoration-none">
@@ -103,27 +133,35 @@ const Header = () => (
         </span>
       </a>
 
-      <nav className="d-none d-lg-block ">
-        <ul className="nav">
-          {["Home", "About Us", "Classes", "Blog", "Contact Us"].map((text, idx) => (
-            <li key={idx} className="nav-item">
-              <a
-                href={`#${text.toLowerCase().replace(" ", "")}`}
-                className={`nav-link px-3  ${idx === 0 ? "active fw-bold" : ""}`}
-              >
-                {text}
-              </a>
-            </li>
-          ))}
-        </ul>
-      </nav>
+      <nav className="d-none d-lg-block">
+      <ul className="nav" style={{padding: '10px' }}>
+        {navItems.map((text, idx) => (
+          <li key={idx} className="nav-item">
+            <a
+              href={`#${text.toLowerCase().replace(/\s+/g, '')}`}
+              className={`px-3 fw-bold`}
+              onMouseEnter={() => setHoveredIndex(idx)}
+              onMouseLeave={() => setHoveredIndex(null)}
+              style={{
+                color: hoveredIndex === idx ? '#F44336' : 'white',
+                textDecoration: 'none',
+                transition: 'color 0.3s ease'
+              }}
+            >
+              {text}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </nav>
 
       <a href="/register" className="btn btn-outline-danger d-none d-lg-inline-block text-uppercase px-4 fw-semibold">
         Join Now
       </a>
     </div>
   </header>
-);
+  )
+};
 
 const Hero = () => (
   <section
@@ -144,7 +182,7 @@ const Hero = () => (
     >
       <div className="text-center text-lg-start mb-5 mb-lg-0">
         <p
-          className="d-inline-block bg-white-10 text-danger py-1 px-3 rounded text-uppercase fw-bold fs-5"
+          className="d-inline-block bg-white-10 text-white py-1 px-3 rounded text-uppercase fw-bold fs-5"
           style={{ fontFamily: "'Catamaran', sans-serif", letterSpacing: "1px" }}
         >
           <strong className="bg-danger px-3 rounded me-3">The Best</strong>Fitness Club
@@ -153,7 +191,6 @@ const Hero = () => (
         <h1 className="display-1 fw-bold mt-3" style={{ fontFamily: "'Catamaran', sans-serif" }}>
           Work Hard To Get Better Life
         </h1>
-
         <p
           className="lead text-secondary my-4"
           style={{ maxWidth: "450px", marginLeft: "auto", marginRight: "auto", marginLeft: 0 }}
@@ -172,7 +209,8 @@ const Hero = () => (
           alt="hero banner"
           width="660"
           height="753"
-          className="img-fluid"
+          className="img-fluid position-relative"
+          style={{ zIndex: 1 }}
         />
 
         <img

@@ -1,12 +1,40 @@
 import React from 'react';
 import { Card, Container, Row, Col, Button, ListGroup } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';  
+
+
 
 const BoardMember = () => {
   return (
+    <div
+    style={{
+      minHeight: '100vh',
+      backgroundImage: `url('/assets/images/4.jpg')`,  // Path to your gym.jpg in public/assets/images/
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
+      backgroundRepeat: 'no-repeat',
+      display: 'flex',
+      alignItems: 'center',
+      padding: '2rem'
+    }}
+  >
     <Container className="mt-4">
-      <h2>Member Dashboard</h2>
-      <p className="text-muted">Welcome to your member dashboard. Here you can manage your gym activities.</p>
+      <h2
+        style={{ 
+          color: 'white', 
+          backgroundColor: '#007bff', 
+          display: 'inline-block', 
+          padding: '15px 30px', 
+          borderRadius: '15px',
+          textShadow: '2px 2px 4px rgba(255, 0, 0, 0.5)' 
+        }}
+      >Member Dashboard</h2>
+      <p className="text-muted"
+        style={{ 
+            color: 'black',
+            textShadow: '2px 2px 4px rgba(255, 0, 0, 0.5)' 
+        }}
+      >Welcome to your member dashboard. Here you can manage your gym activities.</p>
 
       <Row>
         <Col md={6}>
@@ -137,6 +165,7 @@ const BoardMember = () => {
         </Col>
       </Row>
     </Container>
+    </div>
   );
 };
 

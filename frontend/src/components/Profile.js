@@ -2,6 +2,7 @@ import React from 'react';
 import { useAuth } from '../context/AuthContext';
 import { Card, Container, Row, Col, Badge } from 'react-bootstrap';
 
+
 const Profile = () => {
   const { user } = useAuth();
 
@@ -21,8 +22,24 @@ const Profile = () => {
   };
 
   return (
+    
+    <div
+      style={{
+        minHeight: '100vh',
+        backgroundImage: `url('/assets/images/4.jpg')`,  // Path to your gym.jpg in public/assets/images/
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+        padding: '1rem'
+      }}
+    >
     <Container className="mt-4">
-      <h2>User Profile</h2>
+  <h2 style={{color: 'white', 
+          backgroundColor: '#007bff', 
+          display: 'inline-block', 
+          padding: '15px 30px', 
+          borderRadius: '15px',
+          textShadow: '2px 2px 4px rgba(255, 0, 0, 0.5)'}}>User Profile</h2>
       <Row className="justify-content-center">
         <Col md={8}>
           <Card>
@@ -54,6 +71,7 @@ const Profile = () => {
         </Col>
       </Row>
     </Container>
+    </div>
   );
 };
 

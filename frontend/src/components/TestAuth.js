@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Card, Button, Alert, Table, Badge, Spinner } from 'react-bootstrap';
+import { Container, Card, Button, Alert, Table, Badge, Spinner, Col, Row } from 'react-bootstrap';
 import { authAPI, userAPI, membershipAPI, equipmentAPI, gymClassAPI, trainingSessionAPI, classRegistrationAPI, paymentAPI } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 
@@ -101,28 +101,50 @@ const TestAuth = () => {
   };
 
   return (
-    <Container className="mt-4">
-      <Card>
-        <Card.Header>
-          <h4>API Connectivity Test</h4>
-          <p className="mb-0">Test all API endpoints to verify system functionality</p>
-        </Card.Header>
-        <Card.Body>
-          {error && (
-            <Alert variant="danger" dismissible onClose={() => setError('')}>
-              {error}
-            </Alert>
-          )}
-          {success && (
-            <Alert variant="success" dismissible onClose={() => setSuccess('')}>
-              {success}
-            </Alert>
-          )}
 
-          <div className="mb-3">
-            <Button 
-              variant="primary" 
-              onClick={runTests} 
+    <div
+      style={{
+        minHeight: '100vh',
+        backgroundImage: `url('/assets/images/4.jpg')`,  // Path to your gym.jpg in public/assets/images/
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+        padding: '1rem'
+      }}
+    >
+      <Container className="mt-4">
+        <h4
+          style={{
+            color: 'white',
+            backgroundColor: '#007bff',
+            display: 'inline-block',
+            padding: '15px 30px',
+            borderRadius: '15px',
+            textShadow: '2px 2px 4px rgba(255, 0, 0, 0.5)'
+          }}
+        >API Connectivity Test</h4>
+        <p className="mb-0" style={{
+          color: 'black',
+          textShadow: '2px 2px 4px rgba(255, 0, 0, 0.5)'
+        }}>Test all API endpoints to verify system functionality</p>
+        <Row className="justify-content-center">
+        <Col md={8}>
+        <Card>
+          <Card.Body>
+            {error && (
+              <Alert variant="danger" dismissible onClose={() => setError('')}>
+                {error}
+              </Alert>
+            )}
+            {success && (
+              <Alert variant="success" dismissible onClose={() => setSuccess('')}>
+                {success}
+              </Alert>
+            )}
+
+            <Button
+              variant="primary"
+              onClick={runTests}
               disabled={loading}
               className="me-2"
             >
@@ -135,128 +157,132 @@ const TestAuth = () => {
                 'Run API Tests'
               )}
             </Button>
-            
-            {isAuthenticated && (
-              <span className="text-muted">
-                Logged in as: <strong>{user?.username}</strong> ({user?.role})
-              </span>
+            <div className="mb-3">
+
+              {isAuthenticated && (
+                <span className="text-muted">
+                  Logged in as: <strong>{user?.username}</strong> ({user?.role})
+                </span>
+              )}
+            </div>
+
+            {Object.keys(testResults).length > 0 && (
+              <Table striped bordered hover>
+                <thead>
+                  <tr>
+                    <th>API Endpoint</th>
+                    <th>Status</th>
+                    <th>Details</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Authentication</td>
+                    <td>{getStatusBadge(testResults.auth?.success)}</td>
+                    <td>
+                      {testResults.auth?.success ? (
+                        `Token received: ${testResults.auth.data?.accessToken ? 'Yes' : 'No'}`
+                      ) : (
+                        testResults.auth?.error
+                      )}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>Users API</td>
+                    <td>{getStatusBadge(testResults.users?.success)}</td>
+                    <td>
+                      {testResults.users?.success ? (
+                        `${testResults.users.count} users found`
+                      ) : (
+                        testResults.users?.error
+                      )}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>Memberships API</td>
+                    <td>{getStatusBadge(testResults.memberships?.success)}</td>
+                    <td>
+                      {testResults.memberships?.success ? (
+                        `${testResults.memberships.count} memberships found`
+                      ) : (
+                        testResults.memberships?.error
+                      )}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>Equipment API</td>
+                    <td>{getStatusBadge(testResults.equipment?.success)}</td>
+                    <td>
+                      {testResults.equipment?.success ? (
+                        `${testResults.equipment.count} equipment items found`
+                      ) : (
+                        testResults.equipment?.error
+                      )}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>Gym Classes API</td>
+                    <td>{getStatusBadge(testResults.gymClasses?.success)}</td>
+                    <td>
+                      {testResults.gymClasses?.success ? (
+                        `${testResults.gymClasses.count} classes found`
+                      ) : (
+                        testResults.gymClasses?.error
+                      )}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>Training Sessions API</td>
+                    <td>{getStatusBadge(testResults.trainingSessions?.success)}</td>
+                    <td>
+                      {testResults.trainingSessions?.success ? (
+                        `${testResults.trainingSessions.count} sessions found`
+                      ) : (
+                        testResults.trainingSessions?.error
+                      )}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>Class Registrations API</td>
+                    <td>{getStatusBadge(testResults.classRegistrations?.success)}</td>
+                    <td>
+                      {testResults.classRegistrations?.success ? (
+                        `${testResults.classRegistrations.count} registrations found`
+                      ) : (
+                        testResults.classRegistrations?.error
+                      )}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>Payments API</td>
+                    <td>{getStatusBadge(testResults.payments?.success)}</td>
+                    <td>
+                      {testResults.payments?.success ? (
+                        `${testResults.payments.count} payments found`
+                      ) : (
+                        testResults.payments?.error
+                      )}
+                    </td>
+                  </tr>
+                </tbody>
+              </Table>
             )}
-          </div>
 
-          {Object.keys(testResults).length > 0 && (
-            <Table striped bordered hover>
-              <thead>
-                <tr>
-                  <th>API Endpoint</th>
-                  <th>Status</th>
-                  <th>Details</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>Authentication</td>
-                  <td>{getStatusBadge(testResults.auth?.success)}</td>
-                  <td>
-                    {testResults.auth?.success ? (
-                      `Token received: ${testResults.auth.data?.accessToken ? 'Yes' : 'No'}`
-                    ) : (
-                      testResults.auth?.error
-                    )}
-                  </td>
-                </tr>
-                <tr>
-                  <td>Users API</td>
-                  <td>{getStatusBadge(testResults.users?.success)}</td>
-                  <td>
-                    {testResults.users?.success ? (
-                      `${testResults.users.count} users found`
-                    ) : (
-                      testResults.users?.error
-                    )}
-                  </td>
-                </tr>
-                <tr>
-                  <td>Memberships API</td>
-                  <td>{getStatusBadge(testResults.memberships?.success)}</td>
-                  <td>
-                    {testResults.memberships?.success ? (
-                      `${testResults.memberships.count} memberships found`
-                    ) : (
-                      testResults.memberships?.error
-                    )}
-                  </td>
-                </tr>
-                <tr>
-                  <td>Equipment API</td>
-                  <td>{getStatusBadge(testResults.equipment?.success)}</td>
-                  <td>
-                    {testResults.equipment?.success ? (
-                      `${testResults.equipment.count} equipment items found`
-                    ) : (
-                      testResults.equipment?.error
-                    )}
-                  </td>
-                </tr>
-                <tr>
-                  <td>Gym Classes API</td>
-                  <td>{getStatusBadge(testResults.gymClasses?.success)}</td>
-                  <td>
-                    {testResults.gymClasses?.success ? (
-                      `${testResults.gymClasses.count} classes found`
-                    ) : (
-                      testResults.gymClasses?.error
-                    )}
-                  </td>
-                </tr>
-                <tr>
-                  <td>Training Sessions API</td>
-                  <td>{getStatusBadge(testResults.trainingSessions?.success)}</td>
-                  <td>
-                    {testResults.trainingSessions?.success ? (
-                      `${testResults.trainingSessions.count} sessions found`
-                    ) : (
-                      testResults.trainingSessions?.error
-                    )}
-                  </td>
-                </tr>
-                <tr>
-                  <td>Class Registrations API</td>
-                  <td>{getStatusBadge(testResults.classRegistrations?.success)}</td>
-                  <td>
-                    {testResults.classRegistrations?.success ? (
-                      `${testResults.classRegistrations.count} registrations found`
-                    ) : (
-                      testResults.classRegistrations?.error
-                    )}
-                  </td>
-                </tr>
-                <tr>
-                  <td>Payments API</td>
-                  <td>{getStatusBadge(testResults.payments?.success)}</td>
-                  <td>
-                    {testResults.payments?.success ? (
-                      `${testResults.payments.count} payments found`
-                    ) : (
-                      testResults.payments?.error
-                    )}
-                  </td>
-                </tr>
-              </tbody>
-            </Table>
-          )}
-
-          <div className="mt-3">
-            <h6>Test Credentials:</h6>
-            <ul className="list-unstyled">
-              <li><strong>Admin:</strong> admin/admin123</li>
-              <li><strong>Staff:</strong> staff/staff123</li>
-              <li><strong>Trainer:</strong> trainer/trainer123</li>
-              <li><strong>Member:</strong> member/member123</li>
-            </ul>
-          </div>
-        </Card.Body>
-      </Card>
-    </Container>
+            <div className="mt-3">
+              <h6>Test Credentials:</h6>
+              <ul className="list-unstyled">
+                <li><strong>Admin:</strong> admin/admin123</li>
+                <li><strong>Staff:</strong> staff/staff123</li>
+                <li><strong>Trainer:</strong> trainer/trainer123</li>
+                <li><strong>Member:</strong> member/member123</li>
+              </ul>
+            </div>
+          </Card.Body>
+        </Card>
+      </Col>
+      </Row>
+      </Container>
+    </div>
   );
 };
 

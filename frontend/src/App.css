@@ -48,14 +48,18 @@
 
 .navbar-brand {
   font-weight: bold;
+  color: white;
+}
+.navbar-brand:hover{
+  color: #f44336
 }
 
 .nav-link {
-  color: #007bff !important;
+  color: white !important;
 }
 
 .nav-link:hover {
-  color: #0056b3 !important;
+  color: #f44336 !important;
 }
 
 .role-badge {
@@ -144,4 +148,21 @@
   font-size: 1.2rem;
   opacity: 0.9;
 } 
+@keyframes rotate360 {
+  0% {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+  100% {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
+}
+
+@keyframes rotate360Reverse {
+  0% {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
+  100% {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+}
 
